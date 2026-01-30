@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 158473800}
   - component: {fileID: 158473801}
   - component: {fileID: 158473802}
+  - component: {fileID: 158473803}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -168,6 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   m_speed: 2
+  inputHandler: {fileID: 158473803}
 --- !u!114 &158473801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,8 +182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 317cd055885ea974082ea073e6f31a88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CannonMovement
-  m_target: {fileID: 2144616515}
-  m_rotationSpeed: 1000000
+  target: {fileID: 2144616515}
+  rotationSpeed: 1000000
+  inputHandler: {fileID: 158473803}
 --- !u!114 &158473802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,6 +199,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShoot
   m_firePoint: {fileID: 1224223296}
   m_bullet: {fileID: 67046133801379412, guid: 28ba6cea8e43c6745a324bf5e24818eb, type: 3}
+--- !u!114 &158473803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158473798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135c13ccb3245df419e9a298a5ff0a57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  fireEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 158473802}
+        m_TargetAssemblyTypeName: PlayerShoot, Assembly-CSharp
+        m_MethodName: Shoot
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  fireInputAction: {fileID: -5707845228562572150, guid: 6183dc18d023c9541824c44be225248a, type: 3}
+  mousePositionEventAction: {fileID: -6340670832664442257, guid: 6183dc18d023c9541824c44be225248a, type: 3}
+  joystickPositionEventAction: {fileID: -7210398265120442564, guid: 6183dc18d023c9541824c44be225248a, type: 3}
+  movementEventAction: {fileID: 6506227498199769194, guid: 6183dc18d023c9541824c44be225248a, type: 3}
 --- !u!1 &305535636
 GameObject:
   m_ObjectHideFlags: 0

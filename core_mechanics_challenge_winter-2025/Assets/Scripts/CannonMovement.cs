@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 public class CannonMovement : MonoBehaviour
 {
-    [SerializeField] private Transform m_target;
-    [SerializeField] private float m_rotationSpeed;
+    [SerializeField] private Transform    target;
+    [SerializeField] private float        rotationSpeed;
+    [SerializeField] private InputHandler inputHandler;
 
     private void Update()
     {
@@ -15,9 +17,11 @@ public class CannonMovement : MonoBehaviour
     {
         //Todo: Rotate target on Z axis using mouse position
         Vector3 mouseWorldPos = GetMousePosition();
-        mouseWorldPos.z = m_target.position.z; // keep rotation in 2D plane
+        mouseWorldPos.z = target.position.z; // keep rotation in 2D plane
 
         Vector3 direction = mouseWorldPos - transform.position;
+
+        direction = inputHandler.GetDirection();
 
         if (direction.sqrMagnitude < 0.001f)
             return;
@@ -25,15 +29,15 @@ public class CannonMovement : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle - 90);
 
-        m_target.rotation = Quaternion.RotateTowards(
-            m_target.rotation,
+        target.rotation = Quaternion.RotateTowards(
+            target.rotation,
             targetRotation,
-            m_rotationSpeed * Time.deltaTime
+            rotationSpeed * Time.deltaTime
         );
     }
 
     private Vector3 GetMousePosition()
     {
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        return Camera.main.ScreenToWorldPoint(inputHandler.GetMouse());
     }
 }

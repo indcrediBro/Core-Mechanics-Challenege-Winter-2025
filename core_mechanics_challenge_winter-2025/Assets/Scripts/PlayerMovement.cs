@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float m_speed;
-    private Vector2 m_input;
+    [SerializeField] private float        m_speed;
+    private                  Vector2      m_input;
+    [SerializeField] private InputHandler inputHandler;
     
     private void FixedUpdate()
     {
@@ -19,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void GetInput()
     {
-        m_input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        m_input = inputHandler.GetMovement();
     }
 
     private void Move()
