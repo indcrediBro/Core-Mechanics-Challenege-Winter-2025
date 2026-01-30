@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fa287b991161d5b4db3b33cbdf1cdc49
+guid: 7a671aae6ae3c1f47b4c58bc7a317c99
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7339438674492835731
-    second: Arcade Console (2) no center_0
+      213: 6328757617092832707
+    second: Tank 001_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 8
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Arcade Console (2) no center_0
+      name: Tank 001_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 506
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d68371c5963152a90800000000000000
-      internalID: -7339438674492835731
+      spriteID: 3cdad54858344d750800000000000000
+      internalID: 6328757617092832707
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Arcade Console (2) no center_0: -7339438674492835731
+      Tank 001_0: 6328757617092832707
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
