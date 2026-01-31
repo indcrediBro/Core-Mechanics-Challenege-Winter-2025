@@ -150,11 +150,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTank
   m_rb: {fileID: 77519740}
+  m_tankBase: {fileID: 249729318}
   m_cannon: {fileID: 362877574}
   m_firepoint: {fileID: 1917612147}
   m_input:
-    m_moveInputAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-    m_aimInputAction: {fileID: -5630151704836100654, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    m_moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    m_aimAction: {fileID: -5630151704836100654, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_animator:
     m_sr: {fileID: 249729316}
     m_frames:

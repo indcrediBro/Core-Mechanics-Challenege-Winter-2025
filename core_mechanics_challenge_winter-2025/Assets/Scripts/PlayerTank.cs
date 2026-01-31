@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 public class PlayerTank : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D  m_rb;
+    [SerializeField] private Transform    m_tankBase;
     [SerializeField] private Transform    m_cannon;
     [SerializeField] private Transform    m_firepoint;
     [SerializeField] private PlayerInputHandler m_input;
@@ -23,17 +25,27 @@ public class PlayerTank : MonoBehaviour
 
     private void Awake()
     {
-        m_movement = new TankMovement(m_rb, m_moveSpeed);
-        m_rotation = new CannonMovement(m_cannon, m_rotateSpeed);
+        m_movement = new TankMovement(m_rb, m_tankBase, m_moveSpeed);
+        m_rotation = new CannonMovement(m_cannon, m_input);
         m_shooting = new PlayerShoot(m_firepoint, m_fireRate);
+    }
+
+    private void OnEnable()
+    {
+        m_input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        m_input.Disable();
     }
 
     private void Update()
     {
-        m_moveInput = m_input.GetMovement();
-        m_aimInput  = m_input.GetAimDirection(m_cannon.position);
+        m_moveInput = m_input.m_MoveInput;
+        m_aimInput  = m_input.m_AimInput;
 
-        m_rotation.Rotate(m_aimInput, Time.deltaTime);
+        m_rotation.Rotate();
         m_shooting.AutoFire(m_bulletKey, Time.deltaTime);
         m_animator.SetMoveAmount(m_moveInput.sqrMagnitude);
         m_animator.Animate();
