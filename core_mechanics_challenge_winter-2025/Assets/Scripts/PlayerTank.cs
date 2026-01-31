@@ -22,6 +22,11 @@ public class PlayerTank : MonoBehaviour
 
     private void Awake()
     {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         m_movement = new TankMovement(m_input, m_rb, m_tankBase, m_moveSpeed);
         m_rotation = new CannonMovement(m_cannon, m_input);
         m_shooting = new PlayerShoot(m_firepoint, m_fireRate);
