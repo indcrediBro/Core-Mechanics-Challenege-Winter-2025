@@ -3,8 +3,12 @@ using UnityEngine;
 
 public class Wall : MonoBehaviour
 {
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log(other.transform.name);
+        if (other.transform.GetComponent<Bullet>())
+        {
+           Destroy(gameObject);
+           Destroy(other.gameObject);
+        }
     }
 }
