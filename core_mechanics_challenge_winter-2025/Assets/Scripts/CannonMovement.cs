@@ -10,7 +10,7 @@ public class CannonMovement : MonoBehaviour
 
     private void Update()
     {
-        Rotate();
+        // Rotate();
     }
 
     private void Rotate()

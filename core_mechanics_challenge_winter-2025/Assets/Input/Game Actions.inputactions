@@ -57,6 +57,28 @@
                 },
                 {
                     "name": "",
+                    "id": "a8f8e26c-fdaf-49ca-bc1d-cb252450f2a3",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b8bb3cd0-d239-483b-8e09-24c400a17419",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "1489625c-4d7c-4195-a82c-9878de0c190c",
                     "path": "<Mouse>/position",
                     "interactions": "",
