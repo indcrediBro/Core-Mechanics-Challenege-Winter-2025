@@ -7,7 +7,8 @@ public class Bullet : MonoBehaviour, IPoolable
     [SerializeField] private float m_moveSpeed;
     [SerializeField] private float m_lifeTime;
     [SerializeField] private Rigidbody2D m_rb;
-    
+    [SerializeField] private HealthComponent m_healthComponent;
+
     private void OnEnable()
     {
         Destroy(gameObject, m_lifeTime);
@@ -33,5 +34,15 @@ public class Bullet : MonoBehaviour, IPoolable
     private void Destroy()
     {
         ObjectPoolManager.Instance.Despawn("Bullet", gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.TryGetComponent(out HealthComponent health))
+        {
+            health.Damage(1);
+        }
+
+        m_healthComponent.Damage(1);
     }
 }

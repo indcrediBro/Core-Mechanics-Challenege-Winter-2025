@@ -9,10 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1484791375434566668}
-  - component: {fileID: 4043733448701064710}
   - component: {fileID: 6005766427523866951}
   - component: {fileID: 7080441122378785700}
   - component: {fileID: -8635002647122194782}
+  - component: {fileID: 4043733448701064710}
+  - component: {fileID: -6261742755286116000}
   m_Layer: 0
   m_Name: Bullet Prefab
   m_TagString: Untagged
@@ -35,21 +36,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4043733448701064710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67046133801379412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38c79f57c5e8408c91373f4ebf13c74d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  m_moveSpeed: 5
-  m_lifeTime: 5
-  m_rb: {fileID: 7080441122378785700}
 --- !u!212 &6005766427523866951
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -165,7 +151,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -181,3 +167,33 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &4043733448701064710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67046133801379412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38c79f57c5e8408c91373f4ebf13c74d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bullet
+  m_moveSpeed: 5
+  m_lifeTime: 5
+  m_rb: {fileID: 7080441122378785700}
+  m_healthComponent: {fileID: -6261742755286116000}
+--- !u!114 &-6261742755286116000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67046133801379412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13513e8fc6ef4962afaf1bc4a30acd42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  m_maxHealth: 1
+  m_destroyOnDeath: 1
