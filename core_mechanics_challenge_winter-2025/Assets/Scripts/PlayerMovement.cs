@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     {
         m_input = inputHandler.GetMovement();
         
+        /*
         if (Mathf.Abs(m_input.x) > Mathf.Abs(m_input.y))
         {
             m_input.y = 0;
@@ -32,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         m_input.Normalize();
+        */
     }
 
     private void Move()
