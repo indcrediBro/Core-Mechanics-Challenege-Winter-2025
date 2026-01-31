@@ -7,14 +7,20 @@ public class TankAnimator
     [SerializeField] private SpriteRenderer m_sr;
     [SerializeField] private Sprite[] m_frames;
     [SerializeField] private float m_frameTime = 0.1f;
+    private PlayerInputHandler m_input;
 
     private float m_timer;
     private int m_index;
     private bool m_moving;
 
-    public void SetMoveAmount(float _sqr)
+    public void Initialize(PlayerInputHandler _input)
     {
-        m_moving = _sqr > 0.01f;
+        m_input = _input;
+    }
+
+    public void SetMoveAmount()
+    {
+        m_moving = m_input.m_MoveInput.SqrMagnitude() > 0.01f;
     }
 
     public void Animate()

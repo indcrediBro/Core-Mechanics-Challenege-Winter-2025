@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class CannonMovement
 {
     private readonly Transform m_target;
+    private readonly Rigidbody2D m_rb;
     private readonly PlayerInputHandler _mInputHandler;
 
     public CannonMovement(Transform _target, PlayerInputHandler _inputHandler)
@@ -30,12 +31,7 @@ public class CannonMovement
         if (lookDir.sqrMagnitude > 0.001f)
         {
             float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90;
-
-            Rigidbody2D rb = m_target.GetComponent<Rigidbody2D>();
-            if (rb != null)
-                rb.MoveRotation(angle);
-            else
-                m_target.rotation = Quaternion.Euler(0, 0, angle);
+            m_target.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
 }

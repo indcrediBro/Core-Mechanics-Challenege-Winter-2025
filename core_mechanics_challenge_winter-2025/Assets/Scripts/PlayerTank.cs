@@ -20,14 +20,12 @@ public class PlayerTank : MonoBehaviour
     private CannonMovement m_rotation;
     private PlayerShoot m_shooting;
 
-    private Vector2 m_moveInput;
-    private Vector2 m_aimInput;
-
     private void Awake()
     {
-        m_movement = new TankMovement(m_rb, m_tankBase, m_moveSpeed);
+        m_movement = new TankMovement(m_input, m_rb, m_tankBase, m_moveSpeed);
         m_rotation = new CannonMovement(m_cannon, m_input);
         m_shooting = new PlayerShoot(m_firepoint, m_fireRate);
+        m_animator.Initialize(m_input);
     }
 
     private void OnEnable()
@@ -42,17 +40,14 @@ public class PlayerTank : MonoBehaviour
 
     private void Update()
     {
-        m_moveInput = m_input.m_MoveInput;
-        m_aimInput  = m_input.m_AimInput;
-
         m_rotation.Rotate();
         m_shooting.AutoFire(m_bulletKey, Time.deltaTime);
-        m_animator.SetMoveAmount(m_moveInput.sqrMagnitude);
+        m_animator.SetMoveAmount();
         m_animator.Animate();
     }
 
     private void FixedUpdate()
     {
-        m_movement.Move(m_moveInput);
+        m_movement.Move();
     }
 }
