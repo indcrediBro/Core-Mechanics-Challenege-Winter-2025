@@ -94,4 +94,9 @@ public class InputHandler : MonoBehaviour
     {
         return movementEventAction.action.ReadValue<Vector2>();
     }
+
+    public Vector2 GetAimDirection()
+    {
+        return movementEventAction.action.ReadValue<Vector2>();
+    }
 }

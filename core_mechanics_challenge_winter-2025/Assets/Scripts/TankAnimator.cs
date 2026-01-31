@@ -1,38 +1,33 @@
 using System;
 using UnityEngine;
 
-public class TankAnimator : MonoBehaviour
+[Serializable]
+public class TankAnimator
 {
-    [SerializeField] private SpriteRenderer m_tankSR;
-    [SerializeField] private Sprite[] m_allSprite;
-    [SerializeField] private float m_speed;
+    [SerializeField] private SpriteRenderer m_sr;
+    [SerializeField] private Sprite[] m_frames;
+    [SerializeField] private float m_frameTime = 0.1f;
 
-    private int m_index;
     private float m_timer;
-    
-    private void OnEnable()
+    private int m_index;
+    private bool m_moving;
+
+    public void SetMoveAmount(float _sqr)
     {
-        //Listen to Player movement input
-        m_timer =  m_speed;
+        m_moving = _sqr > 0.01f;
     }
 
-    private void Update()
+    public void Animate()
     {
-        Animate();
-    }
+        if (!m_moving)
+            return;
 
-    private void Animate()
-    {
-        if (m_timer > 0)
-        {
-            m_timer -= Time.deltaTime;
+        m_timer -= Time.deltaTime;
+        if (m_timer > 0f)
+            return;
 
-        }
-        else if (m_timer <= 0)
-        {
-            m_index = (m_index + 1) % m_allSprite.Length;
-            m_tankSR.sprite = m_allSprite[m_index];
-            m_timer = m_speed;
-        }
+        m_index = (m_index + 1) % m_frames.Length;
+        m_sr.sprite = m_frames[m_index];
+        m_timer = m_frameTime;
     }
 }

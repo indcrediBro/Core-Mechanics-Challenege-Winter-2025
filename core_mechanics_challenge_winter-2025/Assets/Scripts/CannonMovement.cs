@@ -2,42 +2,29 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
-public class CannonMovement : MonoBehaviour
+public class CannonMovement
 {
-    [SerializeField] private Transform    target;
-    [SerializeField] private float        rotationSpeed;
-    [SerializeField] private InputHandler inputHandler;
+    private readonly Transform m_target;
+    private readonly float m_speed;
 
-    private void Update()
+    public CannonMovement(Transform _target, float _speed)
     {
-        // Rotate();
+        m_target = _target;
+        m_speed = _speed;
     }
 
-    private void Rotate()
+    public void Rotate(Vector2 _direction, float deltaTime)
     {
-        //Todo: Rotate target on Z axis using mouse position
-        Vector3 mouseWorldPos = GetMousePosition();
-        mouseWorldPos.z = target.position.z; // keep rotation in 2D plane
-
-        Vector3 direction = mouseWorldPos - transform.position;
-
-        direction = inputHandler.GetDirection();
-
-        if (direction.sqrMagnitude < 0.001f)
+        if (_direction.sqrMagnitude < 0.001f)
             return;
 
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle - 90);
+        float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg - 90;
+        Quaternion targetRotation = Quaternion.Euler(0f, 0f, angle);
 
-        target.rotation = Quaternion.RotateTowards(
-            target.rotation,
+        m_target.rotation = Quaternion.RotateTowards(
+            m_target.rotation,
             targetRotation,
-            rotationSpeed * Time.deltaTime
+            m_speed * deltaTime
         );
-    }
-
-    private Vector3 GetMousePosition()
-    {
-        return Camera.main.ScreenToWorldPoint(inputHandler.GetMouse());
     }
 }
