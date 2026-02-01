@@ -1,3 +1,4 @@
+using DefaultNamespace;
 using UnityEngine;
 
 public class HealthComponent : MonoBehaviour
@@ -23,6 +24,8 @@ public class HealthComponent : MonoBehaviour
     {
         if (m_destroyOnDeath)
             Destroy(gameObject);
+        else
+            gameObject.SetActive(false);
     }
 
     // Convenience passthroughs
