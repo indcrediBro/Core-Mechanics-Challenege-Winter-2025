@@ -1,5 +1,3 @@
-using System;
-using DefaultNamespace;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour, IPoolable
@@ -11,12 +9,12 @@ public class Bullet : MonoBehaviour, IPoolable
 
     private void OnEnable()
     {
-        Destroy(gameObject, m_lifeTime);
     }
 
 
     private void Launch()
     {
+        m_rb.linearVelocity = Vector2.zero;
         m_rb.AddForce(transform.up  * m_moveSpeed, ForceMode2D.Impulse);
     }
 
@@ -38,7 +36,7 @@ public class Bullet : MonoBehaviour, IPoolable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out HealthComponent health))
+        if (other.TryGetComponent(out HealthComponent health) && other.gameObject.layer != LayerMask.NameToLayer("Bullet"))
         {
             health.Damage(1);
         }

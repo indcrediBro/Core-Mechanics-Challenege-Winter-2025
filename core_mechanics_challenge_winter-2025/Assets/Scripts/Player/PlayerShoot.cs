@@ -1,8 +1,6 @@
-using System;
-using DefaultNamespace;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class PlayerShoot
 {
     private readonly Transform m_firePoint;

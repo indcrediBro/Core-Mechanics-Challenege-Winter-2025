@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Pathfinding;
 
@@ -40,6 +41,12 @@ public class EnemyTank : MonoBehaviour
         m_health.Health.OnDeath += OnDeath;
     }
 
+    private void OnEnable()
+    {
+        m_player = FindFirstObjectByType<PlayerTank>().transform;
+        m_playerBase = FindFirstObjectByType<PlayerBase>().transform;
+    }
+
     private void Update()
     {
         float dt = Time.deltaTime;
@@ -60,7 +67,7 @@ public class EnemyTank : MonoBehaviour
 
         // Combat
         m_cannonLogic.AimAt(target.position, dt);
-        m_shooter.Tick(m_bulletKey, dt);
+       // m_shooter.Tick(m_bulletKey, dt);
     }
 
     private void OnDeath()
