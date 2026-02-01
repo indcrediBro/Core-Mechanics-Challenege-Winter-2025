@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WaveManager : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class WaveManager : MonoBehaviour
     [Header("Timing")]
     [SerializeField] private float m_waveStartDelay = 1f;
     [SerializeField] private float m_waveEndDelay = 1f;
+
+    public event Action<int> OnWaveStarted;
+    public event Action<int> OnWaveCleared;
 
     private EnemyTracker m_tracker;
     private int m_currentWave;
@@ -37,6 +42,11 @@ public class WaveManager : MonoBehaviour
         CheckWaveEnd();
     }
 
+    public void Begin()
+    {
+        StartWave(0);
+    }
+
     private void StartWave(int waveIndex)
     {
         if (waveIndex >= m_waves.Length)
@@ -51,6 +61,7 @@ public class WaveManager : MonoBehaviour
         m_waveActive = true;
 
         Debug.Log($"Wave {m_currentWave + 1} started");
+        OnWaveStarted?.Invoke(m_currentWave);
     }
 
     private void HandleSpawning()
@@ -108,12 +119,12 @@ public class WaveManager : MonoBehaviour
     private void EndWave()
     {
         Debug.Log($"Wave {m_currentWave + 1} cleared");
+        OnWaveCleared?.Invoke(m_currentWave);
 
         // TODO: Show upgrade screen
-        StartNextWave();
     }
 
-    private void StartNextWave()
+    public void StartNextWave()
     {
         StartWave(m_currentWave + 1);
     }
