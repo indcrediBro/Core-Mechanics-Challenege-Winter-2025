@@ -7,6 +7,7 @@ public class Bullet : MonoBehaviour, IPoolable
     [SerializeField] private Rigidbody2D m_rb;
     [SerializeField] private HealthComponent m_healthComponent;
     [SerializeField] private float m_damage;
+    [SerializeField] private string m_poolTag;
 
     private void Launch()
     {
@@ -16,6 +17,7 @@ public class Bullet : MonoBehaviour, IPoolable
 
     public void OnSpawn()
     {
+        CancelInvoke(nameof(Destroy));
         Launch();
         Invoke(nameof(Destroy), m_lifeTime);
     }
@@ -37,7 +39,8 @@ public class Bullet : MonoBehaviour, IPoolable
 
     private void Destroy()
     {
-        ObjectPoolManager.Instance.Despawn("Bullet", gameObject);
+
+        ObjectPoolManager.Instance.Despawn(m_poolTag, gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -45,6 +48,7 @@ public class Bullet : MonoBehaviour, IPoolable
         if (other.TryGetComponent(out HealthComponent health) && other.gameObject.layer != LayerMask.NameToLayer("Bullet"))
         {
             health.Damage(m_damage);
+            ObjectPoolManager.Instance.Spawn("BulletHit",transform.position,Quaternion.identity);
         }
 
         m_healthComponent.Damage(1);

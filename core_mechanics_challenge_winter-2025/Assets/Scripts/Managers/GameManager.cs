@@ -10,10 +10,8 @@ public enum GameState
     Paused
 }
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
-
     [Header("Core")]
     [SerializeField] private WaveManager m_waveManager;
     [SerializeField] private PlayerBase m_playerBase;
@@ -24,23 +22,15 @@ public class GameManager : MonoBehaviour
 
     public GameState State { get; private set; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
+        base.Awake();
         State = GameState.Boot;
     }
 
     private void Start()
     {
         HookEvents();
-        // StartGame();
-        AudioManager.Instance.PlaySound("Music_MainMenu");
     }
 
     private void HookEvents()
@@ -59,8 +49,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game Start");
         SetState(GameState.Playing);
         m_waveManager.Begin();
-        AudioManager.Instance.StopSound("Music_MainMenu");
-        AudioManager.Instance.PlaySound("Music_Game" + Random.Range(0, 3));
+        MusicManager.Instance.StopAllMusic();
+        MusicManager.Instance.PlayInGameTrack();
     }
 
     private void OnWaveCleared(int waveIndex)
@@ -106,10 +96,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"GAME OVER: {reason}");
         SetState(GameState.GameOver);
         Time.timeScale = 0f;
-        for (int i = 0; i < 3; i++)
-        {
-            AudioManager.Instance.StopSound("Music_Game"+i);
-        }
+        MusicManager.Instance.StopAllMusic();
         AudioManager.Instance.PlaySound("SFX_GameOver");
     }
 

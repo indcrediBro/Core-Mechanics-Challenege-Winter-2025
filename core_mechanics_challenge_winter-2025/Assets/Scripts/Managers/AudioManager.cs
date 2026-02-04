@@ -15,10 +15,8 @@ public class AudioSFX
     public bool loop;
 }
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
-    public static AudioManager Instance;
-
     [Header("Mixer Settings")]
     [SerializeField]
     private AudioMixer m_mixer;
@@ -31,9 +29,9 @@ public class AudioManager : MonoBehaviour
 
     private static List<GameObject> m_audioSourceObjects;
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
         InitializeAudioSources();
     }
 

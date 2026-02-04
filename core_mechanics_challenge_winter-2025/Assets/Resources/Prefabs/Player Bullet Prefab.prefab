@@ -184,6 +184,7 @@ MonoBehaviour:
   m_rb: {fileID: 7080441122378785700}
   m_healthComponent: {fileID: -6261742755286116000}
   m_damage: 0
+  m_poolTag: PlayerBullet
 --- !u!114 &-6261742755286116000
 MonoBehaviour:
   m_ObjectHideFlags: 0

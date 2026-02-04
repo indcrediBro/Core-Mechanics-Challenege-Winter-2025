@@ -10,29 +10,26 @@ public enum UIState
     GameOver
 }
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
-    public static UIManager Instance { get; private set; }
-
     [Header("Panels")]
     [SerializeField] private GameObject m_mainMenu;
     [SerializeField] private GameObject m_hud;
     [SerializeField] private GameObject m_pause;
     [SerializeField] private GameObject m_upgrade;
     [SerializeField] private GameObject m_gameOver;
-
+    [SerializeField] private GameObject m_fakeLoadingScreen;
+    [Header("UI Elements")]
     private Dictionary<UIState, GameObject> m_panels;
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        base.Awake();
+        InitializeUI();
+    }
 
-        Instance = this;
-
+    private void InitializeUI()
+    {
         m_panels = new Dictionary<UIState, GameObject>
         {
             { UIState.MainMenu, m_mainMenu },
@@ -42,6 +39,7 @@ public class UIManager : MonoBehaviour
             { UIState.GameOver, m_gameOver }
         };
 
+        m_fakeLoadingScreen.SetActive(true);
         Show(UIState.MainMenu);
     }
 
@@ -110,5 +108,12 @@ public class UIManager : MonoBehaviour
         {
             Show(UIState.Pause);
         }
+    }
+
+    public void DisableLoadingScreen()
+    {
+        m_fakeLoadingScreen.SetActive(false);
+        MusicManager.Instance.StopAllMusic();
+        MusicManager.Instance.PlayMainMenuMusic();
     }
 }

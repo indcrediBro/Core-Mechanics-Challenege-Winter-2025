@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class ObjectPoolManager : MonoBehaviour
+public class ObjectPoolManager : Singleton<ObjectPoolManager>
 {
-    public static ObjectPoolManager Instance { get; private set; }
-
     [System.Serializable]
     private struct PoolConfig
     {
@@ -17,16 +15,14 @@ public class ObjectPoolManager : MonoBehaviour
 
     private readonly Dictionary<string, ObjectPool> m_poolMap = new();
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        base.Awake();
+        InitializePools();
+    }
 
-        Instance = this;
-
+    private void InitializePools()
+    {
         foreach (var config in m_pools)
         {
             Transform parent = new GameObject($"Pool_{config.key}").transform;
