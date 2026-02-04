@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         HookEvents();
-        StartGame();
+        // StartGame();
+        AudioManager.Instance.PlaySound("Music_MainMenu");
     }
 
     private void HookEvents()
@@ -53,11 +54,13 @@ public class GameManager : MonoBehaviour
         m_waveManager.OnWaveCleared += OnWaveCleared;
     }
 
-    private void StartGame()
+    public void StartGame()
     {
         Debug.Log("Game Start");
         SetState(GameState.Playing);
         m_waveManager.Begin();
+        AudioManager.Instance.StopSound("Music_MainMenu");
+        AudioManager.Instance.PlaySound("Music_Game" + Random.Range(0, 3));
     }
 
     private void OnWaveCleared(int waveIndex)
@@ -103,6 +106,11 @@ public class GameManager : MonoBehaviour
         Debug.Log($"GAME OVER: {reason}");
         SetState(GameState.GameOver);
         Time.timeScale = 0f;
+        for (int i = 0; i < 3; i++)
+        {
+            AudioManager.Instance.StopSound("Music_Game"+i);
+        }
+        AudioManager.Instance.PlaySound("SFX_GameOver");
     }
 
     private void SetState(GameState newState)

@@ -30,7 +30,7 @@ public class WaveManager : MonoBehaviour
 
     private void Start()
     {
-        StartWave(0);
+        // StartWave(0);
     }
 
     private void Update()

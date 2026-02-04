@@ -67,7 +67,7 @@ public class EnemyTank : MonoBehaviour
 
         // Combat
         m_cannonLogic.AimAt(target.position, dt);
-       // m_shooter.Tick(m_bulletKey, dt);
+       m_shooter.Tick(m_bulletKey, 1, dt);
     }
 
     private void OnDeath()

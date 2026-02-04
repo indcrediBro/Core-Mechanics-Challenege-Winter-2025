@@ -41,12 +41,7 @@ public class PlayerBase : MonoBehaviour
     private void OnBaseDestroyed()
     {
         Debug.Log("PLAYER BASE DESTROYED");
-        GameOver();
-    }
-
-    private void GameOver()
-    {
-        Time.timeScale = 0f;
+        // GameOver();
     }
 
     private void Flash()

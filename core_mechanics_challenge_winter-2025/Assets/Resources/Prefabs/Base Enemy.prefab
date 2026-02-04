@@ -357,11 +357,11 @@ MonoBehaviour:
   m_health: {fileID: 5401624059177089781}
   m_player: {fileID: 0}
   m_playerBase: {fileID: 0}
-  m_moveSpeed: 1.5
+  m_moveSpeed: 1
   m_rotateSpeed: 360
-  m_fireRate: 0.6
+  m_fireRate: 1.5
   m_repathRate: 0.5
-  m_playerAggroRange: 10
+  m_playerAggroRange: 5
   m_bulletKey: Bullet
 --- !u!114 &7075031073558934116
 MonoBehaviour:

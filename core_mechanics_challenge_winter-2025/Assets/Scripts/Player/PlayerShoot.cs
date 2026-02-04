@@ -1,32 +1,41 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class PlayerShoot
 {
-    private readonly Transform m_firePoint;
-    private readonly float m_fireRate;
-
+    private readonly PlayerStats m_stats;
+    private readonly List<Transform> m_activeFirePoints;
     private float m_timer;
 
-    public PlayerShoot(Transform _firePoint, float _fireRate)
+    public PlayerShoot(PlayerStats stats, List<Transform> firePoints)
     {
-        m_firePoint = _firePoint;
-        m_fireRate = _fireRate;
+        m_stats = stats;
+        m_activeFirePoints = firePoints;
     }
 
-    public void AutoFire(string _key, float _deltaTime)
+    public void AutoFire(string key, float deltaTime)
     {
-        m_timer -= _deltaTime;
+        m_timer -= deltaTime;
+        if (m_timer > 0f) return;
 
-        if (m_timer <= 0f)
+        foreach (var fp in m_activeFirePoints)
         {
-            ObjectPoolManager.Instance.Spawn(
-                _key,
-                m_firePoint.position,
-                m_firePoint.rotation
+            GameObject bullet = ObjectPoolManager.Instance.Spawn(
+                key,
+                fp.position,
+                fp.rotation
             );
 
-            m_timer = m_fireRate;
+            if (bullet.TryGetComponent(out Bullet b))
+            {
+                b.SetDamage(m_stats.Damage);
+                b.SetNewMaxHealth(m_stats.BulletPierce);
+                bullet.transform.localScale = Vector3.one * m_stats.BulletSize;
+            }
         }
+
+        // AudioManager.Instance.PlaySound("SFX_Shoot");
+        m_timer = m_stats.FireRate;
     }
 }

@@ -18,6 +18,15 @@ public class TankMovement
 
     public void Move()
     {
+        if (m_input.m_MoveInput.magnitude != 0)
+        {
+            if(!AudioManager.Instance.IsPlaying("SFX_Move")) AudioManager.Instance.PlaySound("SFX_Move");
+        }
+        else
+        {
+            AudioManager.Instance.StopSound("SFX_Move");
+        }
+
         m_rb.linearVelocity = m_input.m_MoveInput.normalized * m_speed;
         Rotate(m_input.m_MoveInput);
     }

@@ -6,11 +6,7 @@ public class Bullet : MonoBehaviour, IPoolable
     [SerializeField] private float m_lifeTime;
     [SerializeField] private Rigidbody2D m_rb;
     [SerializeField] private HealthComponent m_healthComponent;
-
-    private void OnEnable()
-    {
-    }
-
+    [SerializeField] private float m_damage;
 
     private void Launch()
     {
@@ -29,6 +25,16 @@ public class Bullet : MonoBehaviour, IPoolable
         // Destroy();
     }
 
+    public void SetDamage(float _damage)
+    {
+        m_damage = _damage;
+    }
+
+    public void SetNewMaxHealth(float _maxHealth)
+    {
+        m_healthComponent.Health.SetMax(_maxHealth);
+    }
+
     private void Destroy()
     {
         ObjectPoolManager.Instance.Despawn("Bullet", gameObject);
@@ -38,7 +44,7 @@ public class Bullet : MonoBehaviour, IPoolable
     {
         if (other.TryGetComponent(out HealthComponent health) && other.gameObject.layer != LayerMask.NameToLayer("Bullet"))
         {
-            health.Damage(1);
+            health.Damage(m_damage);
         }
 
         m_healthComponent.Damage(1);

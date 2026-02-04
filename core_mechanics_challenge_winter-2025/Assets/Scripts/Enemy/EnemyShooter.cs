@@ -6,20 +6,26 @@ public class EnemyShooter
     private readonly float m_fireRate;
     private float m_timer;
 
-    public EnemyShooter(Transform firePoint, float fireRate)
+    public EnemyShooter(Transform _firePoint, float _fireRate)
     {
-        m_firePoint = firePoint;
-        m_fireRate = fireRate;
+        m_firePoint = _firePoint;
+        m_fireRate = _fireRate;
         m_timer = 0f;
     }
 
-    public void Tick(string bulletKey, float deltaTime)
+    public void Tick(string _bulletKey, float _damage, float _deltaTime)
     {
-        m_timer -= deltaTime;
+        m_timer -= _deltaTime;
         if (m_timer > 0f)
             return;
 
-        ObjectPoolManager.Instance.Spawn(bulletKey, m_firePoint.position, m_firePoint.rotation);
+        GameObject bullet = ObjectPoolManager.Instance.Spawn(_bulletKey, m_firePoint.position, m_firePoint.rotation);
+        bullet.TryGetComponent(out Bullet bulletComponent);
+        if (bulletComponent)
+        {
+            bulletComponent.SetNewMaxHealth(1);
+            bulletComponent.SetDamage(_damage);
+        }
         m_timer = m_fireRate;
     }
 }
