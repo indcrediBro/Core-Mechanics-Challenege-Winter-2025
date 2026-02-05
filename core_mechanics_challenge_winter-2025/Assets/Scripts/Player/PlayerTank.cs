@@ -11,6 +11,7 @@ public class PlayerTank : MonoBehaviour
     [SerializeField] private WeaponRig m_weaponRig;
     [SerializeField] private TankAnimator m_animator;
     [SerializeField] private string m_bulletKey;
+    [SerializeField] private PlayerStats m_stats;
 
     // [Header("Stats")]
     // [SerializeField] private float m_moveSpeed = 5f;
@@ -18,7 +19,6 @@ public class PlayerTank : MonoBehaviour
     // [SerializeField] private float m_fireRate = 0.1f;
     // [SerializeField] private float m_damage = 1f;
 
-    private PlayerStats m_stats;
     private TankMovement m_movement;
     private CannonMovement m_rotation;
     private PlayerShoot m_shooting;
@@ -30,7 +30,6 @@ public class PlayerTank : MonoBehaviour
 
     private void Initialize()
     {
-        m_stats = new PlayerStats();
         m_movement = new TankMovement(m_input, m_rb, m_tankBase, m_stats.MoveSpeed);
         m_rotation = new CannonMovement(m_cannon, m_input);
         m_animator.Initialize(m_input);
@@ -49,6 +48,9 @@ public class PlayerTank : MonoBehaviour
 
     private void Update()
     {
+        if(GameManager.Instance.State != GameState.Playing)
+            return;
+
         m_rotation.Rotate();
         m_shooting.AutoFire(m_bulletKey, Time.deltaTime);
         m_animator.SetMoveAmount();
@@ -64,5 +66,10 @@ public class PlayerTank : MonoBehaviour
     {
         var firePoints = m_weaponRig.GetActiveFirePoints(m_stats);
         m_shooting = new PlayerShoot(m_stats, firePoints);
+    }
+
+    public PlayerStats GetStats()
+    {
+        return m_stats;
     }
 }

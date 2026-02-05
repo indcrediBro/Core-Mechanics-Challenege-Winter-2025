@@ -1,5 +1,6 @@
-[System.Serializable]
-public class PlayerStats
+using UnityEngine;
+
+public class PlayerStats : MonoBehaviour
 {
     public float MoveSpeed = 2f;
     public float FireRate = 0.5f;

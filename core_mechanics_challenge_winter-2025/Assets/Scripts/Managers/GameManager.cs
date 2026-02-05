@@ -14,11 +14,14 @@ public class GameManager : Singleton<GameManager>
 {
     [Header("Core")]
     [SerializeField] private WaveManager m_waveManager;
+    [SerializeField] private PlayerTank m_player;
     [SerializeField] private PlayerBase m_playerBase;
     [SerializeField] private HealthComponent m_playerHealth;
 
     [Header("Timing")]
     [SerializeField] private float m_upgradeDelay = 0.5f;
+
+
 
     public GameState State { get; private set; }
 
@@ -31,6 +34,9 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         HookEvents();
+
+        m_player.gameObject.SetActive(false);
+        m_playerBase.gameObject.SetActive(false);
     }
 
     private void HookEvents()
@@ -46,6 +52,8 @@ public class GameManager : Singleton<GameManager>
 
     public void StartGame()
     {
+        m_player.gameObject.SetActive(true);
+        m_playerBase.gameObject.SetActive(true);
         Debug.Log("Game Start");
         SetState(GameState.Playing);
         m_waveManager.Begin();
@@ -61,31 +69,31 @@ public class GameManager : Singleton<GameManager>
         Invoke(nameof(OpenUpgrades), m_upgradeDelay);
     }
 
-    private void OpenUpgrades()
+    public void OpenUpgrades()
     {
         SetState(GameState.Upgrading);
         Debug.Log("Upgrade Phase");
-
-        // TODO: show upgrade UI
-        // For now, auto-continue
-        CloseUpgrades();
+        Time.timeScale = 0;
+        UIManager.Instance.ShowUpgrades();
     }
 
     public void CloseUpgrades()
     {
         Debug.Log("Upgrades complete");
         SetState(GameState.Playing);
+        UIManager.Instance.Show(UIState.HUD);
+        Time.timeScale = 1;
         m_waveManager.StartNextWave();
     }
 
     private void OnPlayerDestroyed()
     {
-        GameOver("Player destroyed");
+        GameOver("Player destroyed!");
     }
 
     private void OnBaseDestroyed()
     {
-        GameOver("Base destroyed");
+        GameOver("Base destroyed!");
     }
 
     private void GameOver(string reason)
@@ -94,6 +102,8 @@ public class GameManager : Singleton<GameManager>
             return;
 
         Debug.Log($"GAME OVER: {reason}");
+
+        UIManager.Instance.GameOver(reason);
         SetState(GameState.GameOver);
         Time.timeScale = 0f;
         MusicManager.Instance.StopAllMusic();
@@ -103,6 +113,11 @@ public class GameManager : Singleton<GameManager>
     private void SetState(GameState newState)
     {
         State = newState;
-        Debug.Log($"Game State → {State}");
+    }
+
+    public PlayerTank GetPlayer()
+    {
+        return m_player;
     }
 }
+

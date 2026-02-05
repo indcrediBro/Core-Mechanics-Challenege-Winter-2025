@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public enum UIState
 {
@@ -19,9 +21,11 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject m_upgrade;
     [SerializeField] private GameObject m_gameOver;
     [SerializeField] private GameObject m_fakeLoadingScreen;
-    [Header("UI Elements")]
-    private Dictionary<UIState, GameObject> m_panels;
 
+    [Header("UI Elements")] [SerializeField]
+    private TMP_Text m_gameOverReasonText;
+
+    private Dictionary<UIState, GameObject> m_panels;
     protected override void Awake()
     {
         base.Awake();
@@ -41,6 +45,7 @@ public class UIManager : Singleton<UIManager>
 
         m_fakeLoadingScreen.SetActive(true);
         Show(UIState.MainMenu);
+        m_gameOverReasonText.text = String.Empty;
     }
 
     public void Show(UIState state)
@@ -79,8 +84,9 @@ public class UIManager : Singleton<UIManager>
         Show(UIState.Upgrade);
     }
 
-    public void GameOver()
+    public void GameOver(string _reason)
     {
+        m_gameOverReasonText.text = _reason;
         Show(UIState.GameOver);
     }
 
