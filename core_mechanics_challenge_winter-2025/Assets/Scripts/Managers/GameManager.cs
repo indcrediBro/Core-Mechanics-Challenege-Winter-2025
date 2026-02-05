@@ -119,5 +119,30 @@ public class GameManager : Singleton<GameManager>
     {
         return m_player;
     }
+
+    public void TogglePause()
+    {
+        if (State is not (GameState.Playing or GameState.Paused)) return;
+
+        if (State == GameState.Paused)
+        {
+            SetState(GameState.Playing);
+            UIManager.Instance.Show(UIState.HUD);
+        }
+        else
+        {
+            SetState(GameState.Paused);
+        }
+    }
+
+    public void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    public PlayerBase GetPlayerBase()
+    {
+        return m_playerBase;
+    }
 }
 

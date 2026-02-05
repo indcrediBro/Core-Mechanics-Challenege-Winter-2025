@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Pathfinding;
 
-public class EnemyTank : MonoBehaviour
+public class EnemyTank : MonoBehaviour, IPoolable
 {
     [Header("References")]
     [SerializeField] private Transform m_cannon;
@@ -41,10 +41,10 @@ public class EnemyTank : MonoBehaviour
         m_health.Health.OnDeath += OnDeath;
     }
 
-    private void OnEnable()
+    public void Initialize()
     {
-        m_player = FindFirstObjectByType<PlayerTank>().transform;
-        m_playerBase = FindFirstObjectByType<PlayerBase>().transform;
+        m_player = GameManager.Instance.GetPlayer().transform;
+        m_playerBase = GameManager.Instance.GetPlayerBase().transform;
     }
 
     private void Update()
@@ -72,6 +72,18 @@ public class EnemyTank : MonoBehaviour
 
     private void OnDeath()
     {
-        Destroy(gameObject);
+        ObjectPoolManager.Instance.Spawn("Explosion",transform.position,Quaternion.identity);
+        ObjectPoolManager.Instance.Despawn("BaseEnemy",gameObject);
+    }
+
+    public void OnSpawn()
+    {
+        m_health.ResetHealth();
+        Initialize();
+    }
+
+    public void OnDespawn()
+    {
+
     }
 }

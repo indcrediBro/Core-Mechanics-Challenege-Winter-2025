@@ -37,13 +37,16 @@ public class PlayerInputHandler
 
     private void OnMove(InputAction.CallbackContext _context)
     {
+        if(GameManager.Instance.State != GameState.Playing) return;
+
         m_MoveInput = _context.ReadValue<Vector2>();
     }
 
     private void OnAim(InputAction.CallbackContext _context)
     {
+        if(GameManager.Instance.State != GameState.Playing) return;
+
         m_AimInput = _context.ReadValue<Vector2>();
         m_LastAimDevice = _context.control.device;
-
     }
 }

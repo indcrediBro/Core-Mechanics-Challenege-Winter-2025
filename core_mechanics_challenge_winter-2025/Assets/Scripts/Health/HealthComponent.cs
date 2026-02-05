@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class HealthComponent : MonoBehaviour
@@ -23,11 +24,20 @@ public class HealthComponent : MonoBehaviour
     {
         if (m_destroyOnDeath)
             Destroy(gameObject);
-        else
-            gameObject.SetActive(false);
     }
 
     // Convenience passthroughs
     public void Damage(float _amount) => Health.Damage(_amount);
     public void Heal(float _amount)   => Health.Heal(_amount);
+
+    public void ResetHealth()
+    {
+        Heal(m_maxHealth);
+    }
+
+    public void SetMaxHealth(float _maxHealth)
+    {
+        m_maxHealth = _maxHealth;
+        Heal(m_maxHealth);
+    }
 }

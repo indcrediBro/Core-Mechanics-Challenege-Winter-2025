@@ -78,7 +78,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.PlayerMaxHealth:
-                playerHealth.Health.SetMax(playerHealth.Health.Max + 5);
+                playerHealth.SetMaxHealth(playerHealth.Health.Max + 5);
                 break;
 
             case UpgradeType.BaseHeal:
@@ -86,7 +86,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.BaseMaxHealth:
-                baseHealth.Health.SetMax(baseHealth.Health.Max + 10);
+                baseHealth.SetMaxHealth(baseHealth.Health.Max + 10);
                 break;
         }
     }

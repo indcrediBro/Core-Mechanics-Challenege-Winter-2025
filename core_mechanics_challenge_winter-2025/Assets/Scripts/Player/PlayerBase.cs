@@ -24,7 +24,7 @@ public class PlayerBase : MonoBehaviour
         m_health.Health.OnHealthChanged += OnHealthChanged;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (m_health != null)
         {

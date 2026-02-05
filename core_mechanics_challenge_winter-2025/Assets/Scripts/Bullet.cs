@@ -39,7 +39,6 @@ public class Bullet : MonoBehaviour, IPoolable
 
     private void Destroy()
     {
-
         ObjectPoolManager.Instance.Despawn(m_poolTag, gameObject);
     }
 
@@ -49,6 +48,8 @@ public class Bullet : MonoBehaviour, IPoolable
         {
             health.Damage(m_damage);
             ObjectPoolManager.Instance.Spawn("BulletHit",transform.position,Quaternion.identity);
+
+
         }
 
         m_healthComponent.Damage(1);

@@ -113,6 +113,7 @@ public class UIManager : Singleton<UIManager>
         if (Input.GetButtonDown("Cancel"))
         {
             Show(UIState.Pause);
+            GameManager.Instance.TogglePause();
         }
     }
 

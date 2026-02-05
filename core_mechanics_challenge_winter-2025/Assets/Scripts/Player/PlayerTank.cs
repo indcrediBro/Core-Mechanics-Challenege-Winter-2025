@@ -13,12 +13,6 @@ public class PlayerTank : MonoBehaviour
     [SerializeField] private string m_bulletKey;
     [SerializeField] private PlayerStats m_stats;
 
-    // [Header("Stats")]
-    // [SerializeField] private float m_moveSpeed = 5f;
-    // [SerializeField] private float m_rotateSpeed = 720f;
-    // [SerializeField] private float m_fireRate = 0.1f;
-    // [SerializeField] private float m_damage = 1f;
-
     private TankMovement m_movement;
     private CannonMovement m_rotation;
     private PlayerShoot m_shooting;
@@ -44,15 +38,20 @@ public class PlayerTank : MonoBehaviour
     private void OnDisable()
     {
         m_input.Disable();
+        ObjectPoolManager.Instance.Spawn("Explosion",transform.position,Quaternion.identity);
     }
 
     private void Update()
     {
-        if(GameManager.Instance.State != GameState.Playing)
+        if (GameManager.Instance.State == GameState.Paused)
+        {
+            m_input.Disable();
             return;
+        }
+        m_input.Enable();
 
         m_rotation.Rotate();
-        m_shooting.AutoFire(m_bulletKey, Time.deltaTime);
+        m_shooting.AutoFire(m_bulletKey, Time.deltaTime, m_stats);
         m_animator.SetMoveAmount();
         m_animator.Animate();
     }

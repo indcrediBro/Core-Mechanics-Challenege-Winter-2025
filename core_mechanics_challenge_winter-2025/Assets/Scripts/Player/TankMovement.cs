@@ -18,6 +18,12 @@ public class TankMovement
 
     public void Move()
     {
+        if (GameManager.Instance.State != GameState.Playing)
+        {
+            m_rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if (m_input.m_MoveInput.magnitude != 0)
         {
             if(!AudioManager.Instance.IsPlaying("SFX_Move")) AudioManager.Instance.PlaySound("SFX_Move");
