@@ -27,6 +27,7 @@ public class WeaponRig : MonoBehaviour
 
         for (int i = 0; i < level; i++)
         {
+
             Transform fp = cannon.GetChild(i);
             fp.gameObject.SetActive(true);
             list.Add(fp);

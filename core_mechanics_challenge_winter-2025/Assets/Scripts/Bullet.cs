@@ -17,6 +17,9 @@ public class Bullet : MonoBehaviour, IPoolable
 
     public void OnSpawn()
     {
+        // if(m_poolTag.Equals("Bullet")) m_healthComponent.Health.SetMax(1);
+        // else m_healthComponent.Health.SetMax(GameManager.Instance.GetPlayer().GetStats().BulletPierce);
+
         CancelInvoke(nameof(Destroy));
         Launch();
         Invoke(nameof(Destroy), m_lifeTime);
@@ -24,7 +27,6 @@ public class Bullet : MonoBehaviour, IPoolable
 
     public void OnDespawn()
     {
-        // Destroy();
     }
 
     public void SetDamage(float _damage)
@@ -44,12 +46,19 @@ public class Bullet : MonoBehaviour, IPoolable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out HealthComponent health) && other.gameObject.layer != LayerMask.NameToLayer("Bullet"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
+            return;
+
+        if (other.TryGetComponent(out HealthComponent health))
         {
             health.Damage(m_damage);
-            ObjectPoolManager.Instance.Spawn("BulletHit",transform.position,Quaternion.identity);
+            ObjectPoolManager.Instance.Spawn("BulletHit", transform.position, Quaternion.identity);
+        }
 
-
+        if (m_healthComponent.Health.Current <= 1)
+        {
+            Destroy();
+            return;
         }
 
         m_healthComponent.Damage(1);

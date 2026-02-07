@@ -84,6 +84,5 @@ public class EnemyTank : MonoBehaviour, IPoolable
 
     public void OnDespawn()
     {
-
     }
 }

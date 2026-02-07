@@ -37,8 +37,8 @@ public class PlayerTank : MonoBehaviour
 
     private void OnDisable()
     {
-        m_input.Disable();
         ObjectPoolManager.Instance.Spawn("Explosion",transform.position,Quaternion.identity);
+        m_input.Disable();
     }
 
     private void Update()
