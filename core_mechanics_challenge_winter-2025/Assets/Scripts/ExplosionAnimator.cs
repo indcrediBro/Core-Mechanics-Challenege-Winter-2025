@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class ExplosionAnimator : MonoBehaviour, IPoolable
+public class ExplosionAnimator : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer m_sr;
     [SerializeField] private Sprite[] m_frames;
@@ -13,7 +13,9 @@ public class ExplosionAnimator : MonoBehaviour, IPoolable
 
     private void OnEnable()
     {
-
+        m_index = 0;
+        m_timer = m_frameTime;
+        AudioManager.Instance.PlaySound("SFX_Explode");
     }
 
     private void Update()
@@ -51,9 +53,7 @@ public class ExplosionAnimator : MonoBehaviour, IPoolable
 
     public void OnSpawn()
     {
-        m_index = 0;
-        m_timer = m_frameTime;
-        AudioManager.Instance.PlaySound("SFX_Explode");
+
     }
 
     public void OnDespawn()

@@ -20,20 +20,20 @@ public class PlayerBase : MonoBehaviour
 
         m_defaultColor = m_renderer.color;
 
-        m_health.Health.OnDeath += OnBaseDestroyed;
-        m_health.Health.OnHealthChanged += OnHealthChanged;
+        m_health.HealthOld.OnDeath += OnBaseDestroyed;
+        m_health.HealthOld.OnHealthChanged += OnHealthOldChanged;
     }
 
     private void OnDisable()
     {
         if (m_health != null)
         {
-            m_health.Health.OnDeath -= OnBaseDestroyed;
-            m_health.Health.OnHealthChanged -= OnHealthChanged;
+            m_health.HealthOld.OnDeath -= OnBaseDestroyed;
+            m_health.HealthOld.OnHealthChanged -= OnHealthOldChanged;
         }
     }
 
-    private void OnHealthChanged(float current, float max)
+    private void OnHealthOldChanged(float current, float max)
     {
         Flash();
     }

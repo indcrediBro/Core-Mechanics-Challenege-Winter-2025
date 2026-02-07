@@ -6,18 +6,18 @@ public class HealthComponent : MonoBehaviour
     [SerializeField] private float m_maxHealth = 10f;
     [SerializeField] private bool  m_destroyOnDeath = true;
 
-    public Health Health { get; private set; }
+    public HealthOld HealthOld { get; private set; }
 
     private void Awake()
     {
-        Health = new Health(m_maxHealth);
-        Health.OnDeath += HandleDeath;
+        HealthOld = new HealthOld(m_maxHealth);
+        HealthOld.OnDeath += HandleDeath;
     }
 
     private void OnDestroy()
     {
-        if (Health != null)
-            Health.OnDeath -= HandleDeath;
+        if (HealthOld != null)
+            HealthOld.OnDeath -= HandleDeath;
     }
 
     private void HandleDeath()
@@ -29,8 +29,8 @@ public class HealthComponent : MonoBehaviour
     }
 
     // Convenience passthroughs
-    public void Damage(float _amount) => Health.Damage(_amount);
-    public void Heal(float _amount)   => Health.Heal(_amount);
+    public void Damage(float _amount) => HealthOld.Damage(_amount);
+    public void Heal(float _amount)   => HealthOld.Heal(_amount);
 
     public void ResetHealth()
     {

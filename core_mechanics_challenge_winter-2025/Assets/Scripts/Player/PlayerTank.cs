@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class PlayerTank : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D  m_rb;
-    [SerializeField] private Transform    m_tankBase;
-    [SerializeField] private Transform    m_cannon;
-    [SerializeField] private Transform    m_firepoint;
+    [SerializeField] private Rigidbody2D m_rb;
+    [SerializeField] private Transform m_tankBase;
+    [SerializeField] private Transform m_cannon;
+    [SerializeField] private Transform m_firepoint;
     [SerializeField] private PlayerInputHandler m_input;
     [SerializeField] private WeaponRig m_weaponRig;
     [SerializeField] private TankAnimator m_animator;
@@ -37,7 +37,7 @@ public class PlayerTank : MonoBehaviour
 
     private void OnDisable()
     {
-        ObjectPoolManager.Instance.Spawn("Explosion",transform.position,Quaternion.identity);
+        ObjectPoolManager.Instance.SpawnPooledObject("Explosion", transform.position, Quaternion.identity);
         m_input.Disable();
     }
 
@@ -48,6 +48,7 @@ public class PlayerTank : MonoBehaviour
             m_input.Disable();
             return;
         }
+
         m_input.Enable();
 
         m_rotation.Rotate();

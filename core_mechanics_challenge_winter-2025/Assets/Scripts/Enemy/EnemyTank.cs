@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 using Pathfinding;
 
-public class EnemyTank : MonoBehaviour, IPoolable
+public class EnemyTank : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform m_cannon;
     [SerializeField] private Transform m_firePoint;
     [SerializeField] private Seeker m_seeker;
-    [SerializeField] private HealthComponent m_health;
+    [SerializeField] private EnemyHealth m_health;
 
     [Header("Targets")]
     [SerializeField] private Transform m_player;
@@ -38,51 +38,55 @@ public class EnemyTank : MonoBehaviour, IPoolable
         m_cannonLogic = new EnemyCannon(m_cannon, m_rotateSpeed);
         m_shooter = new EnemyShooter(m_firePoint, m_fireRate);
 
-        m_health.Health.OnDeath += OnDeath;
     }
 
-    public void Initialize()
+    public void OnEnable()
     {
+        m_health.OnDeath += OnDeath;
         m_player = GameManager.Instance.GetPlayer().transform;
         m_playerBase = GameManager.Instance.GetPlayerBase().transform;
     }
 
+    private void OnDisable()
+    {
+        m_health.OnDeath -= OnDeath;
+    }
+
     private void Update()
     {
-        float dt = Time.deltaTime;
-
         Transform target = m_brain.GetTarget();
-        if (target == null)
-            return;
+        if (target == null) return;
 
-        // Pathing
+        HandlePathFinding(target,Time.deltaTime);
+        HandleMovement(Time.deltaTime);
+        HandleCombat(target, Time.deltaTime);
+    }
+
+    private void HandlePathFinding(Transform target, float dt)
+    {
         m_repathTimer -= dt;
         if (m_repathTimer <= 0f)
         {
             m_movement.RequestPath(target.position);
             m_repathTimer = m_repathRate;
         }
+    }
 
-        m_movement.Tick(dt);
+    private void HandleMovement(float _dt)
+    {
+        m_movement.Tick(_dt);
+    }
 
-        // Combat
-        m_cannonLogic.AimAt(target.position, dt);
-       m_shooter.Tick(m_bulletKey, 1, dt);
+    private void HandleCombat(Transform _target, float _dt)
+    {
+        m_cannonLogic.AimAt(_target.position, _dt);
+        m_shooter.Tick(m_bulletKey, 1, _dt);
     }
 
     private void OnDeath()
     {
-        ObjectPoolManager.Instance.Spawn("Explosion",transform.position,Quaternion.identity);
-        ObjectPoolManager.Instance.Despawn("BaseEnemy",gameObject);
-    }
-
-    public void OnSpawn()
-    {
-        m_health.ResetHealth();
-        Initialize();
-    }
-
-    public void OnDespawn()
-    {
+        GameObject explosionVFX = ObjectPoolManager.Instance.GetPooledObject("Explosion");
+        explosionVFX.transform.position = transform.position;
+        explosionVFX.SetActive(true);
     }
 }

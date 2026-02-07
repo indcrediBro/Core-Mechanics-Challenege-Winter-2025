@@ -22,7 +22,7 @@ public class PlayerShoot
 
         foreach (var fp in m_activeFirePoints)
         {
-            GameObject bullet = ObjectPoolManager.Instance.Spawn(
+            GameObject bullet = ObjectPoolManager.Instance.SpawnPooledObject(
                 _key,
                 fp.position,
                 fp.rotation

@@ -42,10 +42,10 @@ public class GameManager : Singleton<GameManager>
     private void HookEvents()
     {
         if (m_playerBase != null)
-            m_playerBase.GetComponent<HealthComponent>().Health.OnDeath += OnBaseDestroyed;
+            m_playerBase.GetComponent<HealthComponent>().HealthOld.OnDeath += OnBaseDestroyed;
 
         if (m_playerHealth != null)
-            m_playerHealth.Health.OnDeath += OnPlayerDestroyed;
+            m_playerHealth.HealthOld.OnDeath += OnPlayerDestroyed;
 
         m_waveManager.OnWaveCleared += OnWaveCleared;
     }

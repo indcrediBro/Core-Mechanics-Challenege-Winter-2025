@@ -84,7 +84,7 @@ public class WaveManager : MonoBehaviour
     {
         Transform spawn = m_spawnPoints[Random.Range(0, m_spawnPoints.Length)];
 
-        GameObject enemy = ObjectPoolManager.Instance.Spawn(
+        GameObject enemy = ObjectPoolManager.Instance.SpawnPooledObject(
             enemyKey,
             spawn.position,
             Quaternion.identity
@@ -94,7 +94,7 @@ public class WaveManager : MonoBehaviour
 
         // Hook death callback
         HealthComponent health = enemy.GetComponent<HealthComponent>();
-        health.Health.OnDeath += () =>
+        health.HealthOld.OnDeath += () =>
         {
             m_tracker.UnregisterEnemy();
         };

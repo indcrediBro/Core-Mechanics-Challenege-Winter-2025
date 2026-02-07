@@ -1,13 +1,14 @@
+using System;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour, IPoolable
+public class Bullet : MonoBehaviour
 {
     [SerializeField] private float m_moveSpeed;
     [SerializeField] private float m_lifeTime;
     [SerializeField] private Rigidbody2D m_rb;
-    [SerializeField] private HealthComponent m_healthComponent;
-    [SerializeField] private float m_damage;
-    [SerializeField] private string m_poolTag;
+    [SerializeField] private BulletHealth m_healthComponent;
+    [SerializeField] private int m_damage;
+    private float timer;
 
     private void Launch()
     {
@@ -15,33 +16,32 @@ public class Bullet : MonoBehaviour, IPoolable
         m_rb.AddForce(transform.up  * m_moveSpeed, ForceMode2D.Impulse);
     }
 
-    public void OnSpawn()
+    public void OnEnable()
     {
-        // if(m_poolTag.Equals("Bullet")) m_healthComponent.Health.SetMax(1);
-        // else m_healthComponent.Health.SetMax(GameManager.Instance.GetPlayer().GetStats().BulletPierce);
-
-        CancelInvoke(nameof(Destroy));
+        timer = m_lifeTime;
         Launch();
-        Invoke(nameof(Destroy), m_lifeTime);
     }
 
-    public void OnDespawn()
+    private void Update()
     {
+        if (timer > 0)
+        {
+            timer -= Time.deltaTime;
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 
-    public void SetDamage(float _damage)
+    public void SetDamage(int _damage)
     {
         m_damage = _damage;
     }
 
-    public void SetNewMaxHealth(float _maxHealth)
+    public void SetNewMaxHealth(int _maxHealth)
     {
-        m_healthComponent.Health.SetMax(_maxHealth);
-    }
-
-    private void Destroy()
-    {
-        ObjectPoolManager.Instance.Despawn(m_poolTag, gameObject);
+        m_healthComponent.SetMaxHealth(_maxHealth);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -49,18 +49,12 @@ public class Bullet : MonoBehaviour, IPoolable
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
             return;
 
-        if (other.TryGetComponent(out HealthComponent health))
+        if (other.TryGetComponent(out Health otherHealth))
         {
-            health.Damage(m_damage);
-            ObjectPoolManager.Instance.Spawn("BulletHit", transform.position, Quaternion.identity);
+            otherHealth.TakeDamage(m_damage);
+            ObjectPoolManager.Instance.SpawnPooledObject("BulletHit", transform.position, Quaternion.identity);
         }
 
-        if (m_healthComponent.Health.Current <= 1)
-        {
-            Destroy();
-            return;
-        }
-
-        m_healthComponent.Damage(1);
+        m_healthComponent.TakeDamage(1);
     }
 }

@@ -1,50 +1,75 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
-public class ObjectPoolManager : Singleton<ObjectPoolManager>
+[System.Serializable]
+public class ObjectPool
 {
-    [System.Serializable]
-    private struct PoolConfig
+    public string m_Name;
+    [HideInInspector] public List<GameObject> m_PooledObjects;
+    public GameObject m_PooledObject;
+    public int m_PooledAmount;
+    public bool m_WillGrow;
+}
+
+public class ObjectPoolManager: Singleton<ObjectPoolManager>
+{
+    public ObjectPool[] m_objectPools;
+
+    private void Start()
     {
-        public string key;
-        public GameObject prefab;
-        public int initialSize;
-    }
-
-    [SerializeField] private PoolConfig[] m_pools;
-
-    private readonly Dictionary<string, ObjectPool> m_poolMap = new();
-
-    protected override void Awake()
-    {
-        base.Awake();
         InitializePools();
     }
 
     private void InitializePools()
     {
-        foreach (var config in m_pools)
+        for (int i = 0; i < m_objectPools.Length; i++)
         {
-            Transform parent = new GameObject($"Pool_{config.key}").transform;
-            parent.SetParent(transform);
+            m_objectPools[i].m_PooledObjects = new List<GameObject>();
+        }
 
-            ObjectPool pool = new ObjectPool(
-                config.prefab,
-                config.initialSize,
-                parent
-            );
+        for (int i = 0; i < m_objectPools.Length; i++)
+        {
+            for (int t = 0; t < m_objectPools[i].m_PooledAmount; t++)
+            {
 
-            m_poolMap.Add(config.key, pool);
+                GameObject obj = Instantiate(m_objectPools[i].m_PooledObject);
+
+                obj.SetActive(false);
+                m_objectPools[i].m_PooledObjects.Add(obj);
+            }
         }
     }
 
-    public GameObject Spawn(string _key, Vector3 _pos, Quaternion _rot)
+    public GameObject GetPooledObject(string name)
     {
-        return m_poolMap[_key].Spawn(_pos, _rot);
+        ObjectPool op = Array.Find(m_objectPools, ObjectPools => ObjectPools.m_Name == name);
+
+        for (int i = 0; i < op.m_PooledObjects.Count; i++)
+        {
+            if (!op.m_PooledObjects[i].activeInHierarchy)
+            {
+                return op.m_PooledObjects[i];
+            }
+        }
+
+        if (op.m_WillGrow)
+        {
+            GameObject obj = Instantiate(op.m_PooledObject);
+            op.m_PooledObjects.Add(obj);
+            return obj;
+        }
+
+        return null;
     }
 
-    public void Despawn(string key, GameObject go)
+    public GameObject SpawnPooledObject(string name, Vector3 position, Quaternion rotation)
     {
-        m_poolMap[key].Despawn(go);
+        GameObject pooledObject = GetPooledObject(name);
+        if (pooledObject == null) return null;
+
+        pooledObject.transform.position = position;
+        pooledObject.transform.rotation = rotation;
+        return pooledObject;
     }
 }

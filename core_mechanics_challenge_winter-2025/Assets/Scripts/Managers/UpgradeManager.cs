@@ -70,9 +70,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
             UpgradeType.FrontCannon     => GameManager.Instance.GetPlayer().GetStats().FrontCannonLevel < 3,
             UpgradeType.RearCannon      => !GameManager.Instance.GetPlayer().GetStats().RearCannonEnabled,
             UpgradeType.ExtraFirePoint  => GameManager.Instance.GetPlayer().GetStats().FirePointLevel < 3,
-            UpgradeType.PlayerHeal      => m_playerHealth.Health.Current < m_playerHealth.Health.Max,
+            UpgradeType.PlayerHeal      => m_playerHealth.HealthOld.Current < m_playerHealth.HealthOld.Max,
             UpgradeType.PlayerMaxHealth => true,
-            UpgradeType.BaseHeal        => m_baseHealth.Health.Current < m_baseHealth.Health.Max,
+            UpgradeType.BaseHeal        => m_baseHealth.HealthOld.Current < m_baseHealth.HealthOld.Max,
             UpgradeType.BaseMaxHealth   => true,
             _ => false
         };

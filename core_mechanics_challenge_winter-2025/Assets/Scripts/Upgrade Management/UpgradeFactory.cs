@@ -36,7 +36,7 @@ public static class UpgradeFactory
             case UpgradeType.BulletDamage:
                 stats.Damage = Mathf.Min(
                     PlayerStats.MAX_DAMAGE,
-                    stats.Damage + 1f
+                    stats.Damage + 1
                 );
                 break;
 
@@ -78,7 +78,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.PlayerMaxHealth:
-                playerHealth.SetMaxHealth(playerHealth.Health.Max + 5);
+                playerHealth.SetMaxHealth(playerHealth.HealthOld.Max + 5);
                 break;
 
             case UpgradeType.BaseHeal:
@@ -86,7 +86,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.BaseMaxHealth:
-                baseHealth.SetMaxHealth(baseHealth.Health.Max + 10);
+                baseHealth.SetMaxHealth(baseHealth.HealthOld.Max + 10);
                 break;
         }
     }

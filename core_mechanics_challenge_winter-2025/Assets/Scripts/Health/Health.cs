@@ -1,50 +1,87 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-public class Health
+public abstract class Health : MonoBehaviour
 {
-    public event Action<float, float> OnHealthChanged;
+    public event Action<int, int> OnHealthChanged;
     public event Action OnDeath;
 
-    public float Current { get; private set; }
-    public float Max { get; private set; }
+    [Header("Health Settings")]
+    [Space(2)]
+    [SerializeField] protected bool m_dontDestroy;
 
-    public bool IsDead => Current <= 0f;
+    [SerializeField] protected int m_maxHealth;
+    [SerializeField] protected int m_currentHealth;
+    [SerializeField] protected float m_waitTimeBeforeDeath = 0f;
 
-    public Health(float maxHealth)
+    protected bool m_isDead;
+
+    public virtual float GetMaxHealthValue() { return m_maxHealth; }
+    public virtual float GetCurrentHealthValue() { return m_currentHealth; }
+    public virtual bool IsDead() { return m_isDead; }
+
+    public virtual void Heal(int _value)
     {
-        Max = Mathf.Max(1f, maxHealth);
-        Current = Max;
+        ChangeHealth(m_currentHealth + _value);
     }
 
-    public void Damage(float amount)
+    public virtual void TakeDamage(int _damage)
     {
-        if (IsDead || amount <= 0f)
-            return;
-
-        Current = Mathf.Clamp(Current - amount, 0f, Max);
-        OnHealthChanged?.Invoke(Current, Max);
-
-        if (Current <= 0f)
-            OnDeath?.Invoke();
+        ChangeHealth(m_currentHealth - _damage);
+        if (m_currentHealth <= 0)
+        {
+            Die(m_waitTimeBeforeDeath);
+        }
     }
 
-    public void Heal(float amount)
+    protected virtual void Die(float _timeBeforeRemoving)
     {
-        if (IsDead || amount <= 0f)
-            return;
-
-        Current = Mathf.Clamp(Current + amount, 0f, Max);
-        OnHealthChanged?.Invoke(Current, Max);
+        StartCoroutine(DieCO(_timeBeforeRemoving));
     }
 
-    public void SetMax(float newMax, bool healToFull = false)
+    public void ResetHealthToMax()
     {
-        Max = Mathf.Max(1f, newMax);
-        if (healToFull)
-            Current = Max;
+        ChangeHealth(m_maxHealth);
+        m_isDead = false;
+    }
 
-        Current = Mathf.Clamp(Current, 0f, Max);
-        OnHealthChanged?.Invoke(Current, Max);
+    public void SetMaxHealth(int _amount)
+    {
+        m_maxHealth = _amount;
+        ResetHealthToMax();
+    }
+
+    protected virtual void OnEnable()
+    {
+        ResetHealthToMax();
+    }
+
+    private void ChangeHealth(int _value)
+    {
+        m_currentHealth = Mathf.Clamp(_value, 0, m_maxHealth);
+        OnHealthChanged?.Invoke(m_currentHealth, m_maxHealth);
+    }
+
+    private void Deactivate()
+    {
+        StopAllCoroutines();
+        gameObject.SetActive(false);
+    }
+
+    private void Destroy()
+    {
+        Destroy(gameObject);
+    }
+
+    private IEnumerator DieCO(float _timeToWait)
+    {
+        m_isDead = true;
+        OnDeath?.Invoke();
+        yield return new WaitForSeconds(_timeToWait);
+        if (m_dontDestroy)
+            Deactivate();
+        else
+            Destroy();
     }
 }

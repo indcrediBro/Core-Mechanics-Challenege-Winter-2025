@@ -13,13 +13,13 @@ public class EnemyShooter
         m_timer = 0f;
     }
 
-    public void Tick(string _bulletKey, float _damage, float _deltaTime)
+    public void Tick(string _bulletKey, int _damage, float _deltaTime)
     {
         m_timer -= _deltaTime;
         if (m_timer > 0f)
             return;
 
-        GameObject bullet = ObjectPoolManager.Instance.Spawn(_bulletKey, m_firePoint.position, m_firePoint.rotation);
+        GameObject bullet = ObjectPoolManager.Instance.SpawnPooledObject(_bulletKey, m_firePoint.position, m_firePoint.rotation);
         bullet.TryGetComponent(out Bullet bulletComponent);
         if (bulletComponent)
         {
