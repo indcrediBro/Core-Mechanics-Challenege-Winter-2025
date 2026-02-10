@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 
 public enum UIState
 {
@@ -22,8 +23,12 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject m_gameOver;
     [SerializeField] private GameObject m_fakeLoadingScreen;
 
-    [Header("UI Elements")] [SerializeField]
-    private TMP_Text m_gameOverReasonText;
+    [Header("UI Elements")]
+    [SerializeField] private TMP_Text m_gameOverReasonText;
+    [SerializeField] private Slider m_waveSlider;
+    [SerializeField] private TMP_Text m_waveText;
+    [SerializeField] private TMP_Text m_difficultyText;
+    [SerializeField] private TMP_Text[] m_scoresUI, m_bestScoresUI, m_livesUI;
 
     private Dictionary<UIState, GameObject> m_panels;
     protected override void Awake()
@@ -46,6 +51,8 @@ public class UIManager : Singleton<UIManager>
         m_fakeLoadingScreen.SetActive(true);
         Show(UIState.MainMenu);
         m_gameOverReasonText.text = String.Empty;
+        RunManager.Instance.OnWaveStarted += OnWaveStarted;
+        GameManager.Instance.GetPlayerHealth().OnDamaged += UpdateLivesUI;
     }
 
     public void Show(UIState state)
@@ -84,29 +91,40 @@ public class UIManager : Singleton<UIManager>
         Show(UIState.Upgrade);
     }
 
+    private void OnWaveStarted(WaveRuntime wave)
+    {
+        m_waveSlider.value = 0f;
+        m_waveText.text = $"{RunManager.Instance.CurrentWave + 1}";
+        string difficultyName = String.Empty;
+        switch (RunManager.Instance.DifficultyLevel)
+        {
+            case 0:
+                difficultyName = "Easy";
+                break;
+            case 1:
+                difficultyName = "Normal";
+                break;
+            case 2:
+                difficultyName = "Hard";
+                break;
+            case 3:
+                difficultyName = "Expert";
+                break;
+            case 4:
+                difficultyName = "Master";
+                break;
+            default:
+                difficultyName = "God";
+                break;
+        }
+        m_difficultyText.text = difficultyName;
+    }
+
     public void GameOver(string _reason)
     {
         m_gameOverReasonText.text = _reason;
         Show(UIState.GameOver);
     }
-
-    public void Restart()
-    {
-        // GameManager.Instance.RestartGame();
-    }
-
-    // public void SelectUpgrade(UpgradeType type)
-    // {
-    //     UpgradeFactory.Apply(
-    //         type,
-    //         GameManager.Instance.PlayerStats,
-    //         GameManager.Instance.PlayerHealth,
-    //         GameManager.Instance.BaseHealth
-    //     );
-    //
-    //     GameManager.Instance.RebuildWeapons();
-    //     UIManager.Instance.Show(UIState.HUD);
-    // }
 
     private void Update()
     {
@@ -115,6 +133,15 @@ public class UIManager : Singleton<UIManager>
             Show(UIState.Pause);
             GameManager.Instance.TogglePause();
         }
+
+        if (GameManager.Instance.State != GameState.Playing)
+            return;
+
+        var wave = RunManager.Instance.CurrentWaveRuntime;
+        if (wave == null)
+            return;
+
+        m_waveSlider.value = wave.Progress01;
     }
 
     public void DisableLoadingScreen()
@@ -122,5 +149,55 @@ public class UIManager : Singleton<UIManager>
         m_fakeLoadingScreen.SetActive(false);
         MusicManager.Instance.StopAllMusic();
         MusicManager.Instance.PlayMainMenuMusic();
+    }
+
+    public void UpdateScore()
+    {
+        if(m_scoresUI.Length == 0) return;
+
+        UpdateCurrentScoresUI();
+        UpdateBestScoresUI();
+    }
+
+    private void UpdateCurrentScoresUI()
+    {
+        foreach (TMP_Text scoreText in m_scoresUI)
+        {
+            if (scoreText == null)
+            {
+                Debug.LogError("scoresUI contains a null reference!");
+                continue;
+            }
+
+            scoreText.text = ScoreManager.Instance.Score.ToString();
+        }
+    }
+
+
+    private void UpdateBestScoresUI()
+    {
+        int highscore = PlayerPrefs.GetInt("HighScore", 0);
+        int currentScore = ScoreManager.Instance.Score;
+
+        if (currentScore > highscore)
+        {
+            highscore = currentScore;
+            PlayerPrefs.SetInt("HighScore", highscore);
+        }
+
+        foreach (TMP_Text scoreText in m_bestScoresUI)
+        {
+            scoreText.text = highscore.ToString();
+        }
+    }
+    public void UpdateLivesUI()
+    {
+        int l = GameManager.Instance.GetPlayerHealth().GetCurrentHealthValue();
+
+        Color c = l <= 1 ? Color.red : Color.white;
+        foreach (TMP_Text liveText in m_livesUI)
+        {
+            liveText.text = l.ToString();
+        }
     }
 }

@@ -5,15 +5,15 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] private float m_moveSpeed;
     [SerializeField] private float m_lifeTime;
-    [SerializeField] private Rigidbody2D m_rb;
+    [SerializeField] private Rigidbody m_rb;
     [SerializeField] private BulletHealth m_healthComponent;
     [SerializeField] private int m_damage;
     private float timer;
 
     private void Launch()
     {
-        m_rb.linearVelocity = Vector2.zero;
-        m_rb.AddForce(transform.up  * m_moveSpeed, ForceMode2D.Impulse);
+        m_rb.linearVelocity = Vector3.zero;
+        m_rb.AddForce(transform.forward  * m_moveSpeed, ForceMode.Impulse);
     }
 
     public void OnEnable()
@@ -24,6 +24,11 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.State != GameState.Playing)
+        {
+            gameObject.SetActive(false);
+        }
+
         if (timer > 0)
         {
             timer -= Time.deltaTime;
@@ -44,7 +49,7 @@ public class Bullet : MonoBehaviour
         m_healthComponent.SetMaxHealth(_maxHealth);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
             return;
@@ -52,9 +57,10 @@ public class Bullet : MonoBehaviour
         if (other.TryGetComponent(out Health otherHealth))
         {
             otherHealth.TakeDamage(m_damage);
-            ObjectPoolManager.Instance.SpawnPooledObject("BulletHit", transform.position, Quaternion.identity);
         }
 
+        ObjectPoolManager.Instance.SpawnPooledObject("BulletHit", transform.position, Quaternion.identity).SetActive(true);
         m_healthComponent.TakeDamage(1);
+
     }
 }

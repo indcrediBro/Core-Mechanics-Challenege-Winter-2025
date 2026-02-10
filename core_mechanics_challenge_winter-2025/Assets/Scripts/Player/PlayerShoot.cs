@@ -7,36 +7,51 @@ public class PlayerShoot
     private readonly List<Transform> m_activeFirePoints;
     private float m_timer;
 
-    public PlayerShoot(PlayerStats _stats, List<Transform> _firePoints)
+    public PlayerShoot(PlayerStats stats, List<Transform> firePoints)
     {
-        m_activeFirePoints = _firePoints;
+        m_activeFirePoints = firePoints;
+        m_timer = 0f;
     }
 
-    public void AutoFire(string _key, float _deltaTime, PlayerStats _stats)
+    public void TickCooldown(float dt)
     {
-        if(GameManager.Instance.State != GameState.Playing)
+        m_timer -= dt;
+    }
+
+    public void TryShoot(
+        string bulletKey,
+        PlayerStats stats,
+        PlayerInputHandler input
+    )
+    {
+        if (m_timer > 0f)
             return;
 
-        m_timer -= _deltaTime;
-        if (m_timer > 0f) return;
+        if (!input.ShootPressed)
+            return;
 
         foreach (var fp in m_activeFirePoints)
         {
             GameObject bullet = ObjectPoolManager.Instance.SpawnPooledObject(
-                _key,
+                bulletKey,
                 fp.position,
                 fp.rotation
             );
 
             if (bullet.TryGetComponent(out Bullet b))
             {
-                b.SetDamage(_stats.Damage);
-                b.SetNewMaxHealth(_stats.BulletPierce);
-                bullet.transform.localScale = Vector3.one * _stats.BulletSize;
+                b.SetDamage(stats.Damage);
+                b.SetNewMaxHealth(stats.BulletPierce);
+                bullet.transform.localScale =
+                    Vector3.one * stats.BulletSize;
             }
+
+            bullet.SetActive(true);
         }
 
         AudioManager.Instance.PlaySound("SFX_Shoot");
-        m_timer = _stats.FireRate;
+        GameManager.Instance.ShotFired();
+        m_timer = stats.FireRate;
+        input.ConsumeShoot();
     }
 }

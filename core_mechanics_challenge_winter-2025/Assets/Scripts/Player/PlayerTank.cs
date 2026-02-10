@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerTank : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D m_rb;
+    [SerializeField] private Rigidbody m_rb;
     [SerializeField] private Transform m_tankBase;
     [SerializeField] private Transform m_cannon;
     [SerializeField] private Transform m_firepoint;
@@ -12,6 +12,7 @@ public class PlayerTank : MonoBehaviour
     [SerializeField] private TankAnimator m_animator;
     [SerializeField] private string m_bulletKey;
     [SerializeField] private PlayerStats m_stats;
+    [SerializeField] private PlayerHealth m_health;
 
     private TankMovement m_movement;
     private CannonMovement m_rotation;
@@ -22,37 +23,35 @@ public class PlayerTank : MonoBehaviour
         Initialize();
     }
 
-    private void Initialize()
+    private void Start()
     {
-        m_movement = new TankMovement(m_input, m_rb, m_tankBase, m_stats.MoveSpeed);
-        m_rotation = new CannonMovement(m_cannon, m_input);
-        m_animator.Initialize(m_input);
-        RebuildWeapon();
+        UpdateLives();
     }
 
     private void OnEnable()
     {
         m_input.Enable();
+        m_health.OnDeath += HandleDeath;
+        m_health.OnDamaged += UpdateLives;
     }
 
     private void OnDisable()
     {
-        ObjectPoolManager.Instance.SpawnPooledObject("Explosion", transform.position, Quaternion.identity);
         m_input.Disable();
+        m_health.OnDeath -= HandleDeath;
+        m_health.OnDamaged -= UpdateLives;
     }
 
     private void Update()
     {
         if (GameManager.Instance.State == GameState.Paused)
-        {
-            m_input.Disable();
             return;
-        }
-
-        m_input.Enable();
 
         m_rotation.Rotate();
-        m_shooting.AutoFire(m_bulletKey, Time.deltaTime, m_stats);
+
+        m_shooting.TickCooldown(Time.deltaTime);
+        m_shooting.TryShoot(m_bulletKey, m_stats, m_input);
+
         m_animator.SetMoveAmount();
         m_animator.Animate();
     }
@@ -62,14 +61,34 @@ public class PlayerTank : MonoBehaviour
         m_movement.Move();
     }
 
+    private void Initialize()
+    {
+        m_movement = new TankMovement(m_input, m_rb, m_tankBase, m_stats.MoveSpeed);
+        m_rotation = new CannonMovement(m_cannon, m_input);
+        m_animator.Initialize(m_input);
+        RebuildWeapon();
+    }
+
+    public PlayerStats GetStats()
+    {
+        return m_stats;
+    }
+
     public void RebuildWeapon()
     {
         var firePoints = m_weaponRig.GetActiveFirePoints(m_stats);
         m_shooting = new PlayerShoot(m_stats, firePoints);
     }
 
-    public PlayerStats GetStats()
+    private void HandleDeath()
     {
-        return m_stats;
+        AudioManager.Instance.StopSound("SFX_Move");
+        GameObject explosion = ObjectPoolManager.Instance.SpawnPooledObject("Explosion", transform.position, Quaternion.identity);
+        explosion.SetActive(true);
+    }
+
+    private void UpdateLives()
+    {
+        UIManager.Instance.UpdateLivesUI();
     }
 }

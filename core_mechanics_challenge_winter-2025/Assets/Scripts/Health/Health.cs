@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Health : MonoBehaviour
 {
+    public event Action OnDamaged;
     public event Action<int, int> OnHealthChanged;
     public event Action OnDeath;
 
@@ -17,8 +18,8 @@ public abstract class Health : MonoBehaviour
 
     protected bool m_isDead;
 
-    public virtual float GetMaxHealthValue() { return m_maxHealth; }
-    public virtual float GetCurrentHealthValue() { return m_currentHealth; }
+    public virtual int GetMaxHealthValue() { return m_maxHealth; }
+    public virtual int GetCurrentHealthValue() { return m_currentHealth; }
     public virtual bool IsDead() { return m_isDead; }
 
     public virtual void Heal(int _value)
@@ -29,6 +30,8 @@ public abstract class Health : MonoBehaviour
     public virtual void TakeDamage(int _damage)
     {
         ChangeHealth(m_currentHealth - _damage);
+        OnDamaged?.Invoke();
+
         if (m_currentHealth <= 0)
         {
             Die(m_waitTimeBeforeDeath);
@@ -76,6 +79,7 @@ public abstract class Health : MonoBehaviour
 
     private IEnumerator DieCO(float _timeToWait)
     {
+
         m_isDead = true;
         OnDeath?.Invoke();
         yield return new WaitForSeconds(_timeToWait);

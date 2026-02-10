@@ -21,8 +21,8 @@ public static class UpgradeFactory
     public static void Apply(
         UpgradeType type,
         PlayerStats stats,
-        HealthComponent playerHealth,
-        HealthComponent baseHealth)
+        PlayerHealth playerHealth,
+        BaseHealth baseHealth)
     {
         switch (type)
         {
@@ -78,7 +78,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.PlayerMaxHealth:
-                playerHealth.SetMaxHealth(playerHealth.HealthOld.Max + 5);
+                playerHealth.SetMaxHealth(playerHealth.GetMaxHealthValue() + 5);
                 break;
 
             case UpgradeType.BaseHeal:
@@ -86,7 +86,7 @@ public static class UpgradeFactory
                 break;
 
             case UpgradeType.BaseMaxHealth:
-                baseHealth.SetMaxHealth(baseHealth.HealthOld.Max + 10);
+                baseHealth.SetMaxHealth(baseHealth.GetMaxHealthValue() + 10);
                 break;
         }
     }

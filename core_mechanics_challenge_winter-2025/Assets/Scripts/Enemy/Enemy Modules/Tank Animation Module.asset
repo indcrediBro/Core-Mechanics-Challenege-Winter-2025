@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6b669834f942749d08c9de8bd6f72c, type: 3}
+  m_Name: Tank Animation Module
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleSpriteAnimationModule
+  frames:
+  - {fileID: 21300000, guid: 1d6f45a99440982408c45771c69ab80f, type: 3}
+  - {fileID: 21300000, guid: 7a671aae6ae3c1f47b4c58bc7a317c99, type: 3}
+  - {fileID: 21300000, guid: a9bd18c0d117f3948b5c3078179744c1, type: 3}
+  - {fileID: 21300000, guid: 7a671aae6ae3c1f47b4c58bc7a317c99, type: 3}
+  frameTime: 0.1
+  moveThreshold: 0.05

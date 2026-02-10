@@ -15,7 +15,6 @@ public class ExplosionAnimator : MonoBehaviour
     {
         m_index = 0;
         m_timer = m_frameTime;
-        AudioManager.Instance.PlaySound("SFX_Explode");
     }
 
     private void Update()
@@ -44,20 +43,18 @@ public class ExplosionAnimator : MonoBehaviour
         m_index++;
         m_sr.sprite = m_frames[m_index];
         m_timer = m_frameTime;
+        if (m_index == 1)
+        {
+            AudioManager.Instance.PlaySound("SFX_Explode");
+        }
+        if (m_index == 5)
+        {
+            GameManager.Instance.Flash();
+        }
 
         if (m_index == m_frames.Length - 1)
         {
             DestroyOnComplete();
         }
-    }
-
-    public void OnSpawn()
-    {
-
-    }
-
-    public void OnDespawn()
-    {
-        throw new NotImplementedException();
     }
 }

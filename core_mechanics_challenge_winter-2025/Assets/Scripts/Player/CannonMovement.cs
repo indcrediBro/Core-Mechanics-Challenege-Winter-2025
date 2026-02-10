@@ -3,35 +3,44 @@ using UnityEngine.InputSystem;
 
 public class CannonMovement
 {
-    private readonly Transform m_target;
-    private readonly Rigidbody2D m_rb;
-    private readonly PlayerInputHandler _mInputHandler;
+    private readonly Transform m_cannon;
+    private readonly PlayerInputHandler m_input;
+    private readonly Camera m_cam;
 
-    public CannonMovement(Transform _target, PlayerInputHandler _inputHandler)
+    public CannonMovement(Transform cannon, PlayerInputHandler input)
     {
-        m_target = _target;
-        _mInputHandler = _inputHandler;
+        m_cannon = cannon;
+        m_input = input;
+        m_cam = Camera.main;
     }
 
     public void Rotate()
     {
-        Vector2 lookDir = Vector2.zero;
+        Vector3 lookDir = Vector3.zero;
 
-        if (_mInputHandler.m_LastAimDevice is Gamepad)
+        if (m_input.m_LastAimDevice is Gamepad)
         {
-            lookDir = _mInputHandler.m_AimInput.normalized;
+            Vector2 aim = m_input.m_AimInput;
+            if (aim.sqrMagnitude < 0.01f) return;
+
+            lookDir = new Vector3(aim.x, 0f, aim.y);
         }
-        else if (_mInputHandler.m_LastAimDevice is Mouse)
+        else if (m_input.m_LastAimDevice is Mouse)
         {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            mousePos.z = m_target.position.z;
-            lookDir = (mousePos - m_target.position).normalized;
+            Ray ray = m_cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Plane plane = new Plane(Vector3.up, m_cannon.position);
+
+            if (!plane.Raycast(ray, out float dist)) return;
+
+            Vector3 hitPoint = ray.GetPoint(dist);
+            lookDir = hitPoint - m_cannon.position;
+            lookDir.y = 0f;
         }
 
-        if (lookDir.sqrMagnitude > 0.001f)
-        {
-            float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90;
-            m_target.rotation = Quaternion.Euler(0, 0, angle);
-        }
+        if (lookDir.sqrMagnitude < 0.001f)
+            return;
+
+        Quaternion targetRot = Quaternion.LookRotation(lookDir.normalized, Vector3.up);
+        m_cannon.rotation = targetRot;
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum GameState
@@ -13,17 +15,18 @@ public enum GameState
 public class GameManager : Singleton<GameManager>
 {
     [Header("Core")]
-    [SerializeField] private WaveManager m_waveManager;
     [SerializeField] private PlayerTank m_player;
     [SerializeField] private PlayerBase m_playerBase;
-    [SerializeField] private HealthComponent m_playerHealth;
+    [SerializeField] private PlayerHealth m_playerHealth;
 
     [Header("Timing")]
     [SerializeField] private float m_upgradeDelay = 0.5f;
 
-
-
     public GameState State { get; private set; }
+    public event Action OnGameStart;
+    public event Action OnGameOver;
+    public event Action OnBombExplode;
+    public event Action OnShotFired;
 
     protected override void Awake()
     {
@@ -42,12 +45,12 @@ public class GameManager : Singleton<GameManager>
     private void HookEvents()
     {
         if (m_playerBase != null)
-            m_playerBase.GetComponent<HealthComponent>().HealthOld.OnDeath += OnBaseDestroyed;
+            m_playerBase.GetComponent<BaseHealth>().OnDeath += OnBaseDestroyed;
 
         if (m_playerHealth != null)
-            m_playerHealth.HealthOld.OnDeath += OnPlayerDestroyed;
+            m_playerHealth.OnDeath += OnPlayerDestroyed;
 
-        m_waveManager.OnWaveCleared += OnWaveCleared;
+        RunManager.Instance.OnWaveCleared += OnWaveCleared;
     }
 
     public void StartGame()
@@ -55,17 +58,17 @@ public class GameManager : Singleton<GameManager>
         m_player.gameObject.SetActive(true);
         m_playerBase.gameObject.SetActive(true);
         Debug.Log("Game Start");
+        OnGameStart?.Invoke();
         SetState(GameState.Playing);
-        m_waveManager.Begin();
+        LevelManager.Instance.LoadRandomMap();
+        RunManager.Instance.StartRun();
         MusicManager.Instance.StopAllMusic();
         MusicManager.Instance.PlayInGameTrack();
     }
 
-    private void OnWaveCleared(int waveIndex)
+    private void OnWaveCleared()
     {
-        Debug.Log($"Wave {waveIndex + 1} cleared");
         SetState(GameState.WaveCleared);
-
         Invoke(nameof(OpenUpgrades), m_upgradeDelay);
     }
 
@@ -80,10 +83,12 @@ public class GameManager : Singleton<GameManager>
     public void CloseUpgrades()
     {
         Debug.Log("Upgrades complete");
+
         SetState(GameState.Playing);
         UIManager.Instance.Show(UIState.HUD);
         Time.timeScale = 1;
-        m_waveManager.StartNextWave();
+        AudioManager.Instance.PlaySound("SFX_Powerup");
+        RunManager.Instance.AdvanceWave();
     }
 
     private void OnPlayerDestroyed()
@@ -108,6 +113,7 @@ public class GameManager : Singleton<GameManager>
         Time.timeScale = 0f;
         MusicManager.Instance.StopAllMusic();
         AudioManager.Instance.PlaySound("SFX_GameOver");
+        OnGameOver?.Invoke();
     }
 
     private void SetState(GameState newState)
@@ -118,6 +124,11 @@ public class GameManager : Singleton<GameManager>
     public PlayerTank GetPlayer()
     {
         return m_player;
+    }
+
+    public PlayerHealth GetPlayerHealth()
+    {
+        return m_playerHealth;
     }
 
     public void TogglePause()
@@ -143,6 +154,16 @@ public class GameManager : Singleton<GameManager>
     public PlayerBase GetPlayerBase()
     {
         return m_playerBase;
+    }
+
+    public void Flash()
+    {
+        OnBombExplode?.Invoke();
+    }
+
+    public void ShotFired()
+    {
+        OnShotFired?.Invoke();
     }
 }
 

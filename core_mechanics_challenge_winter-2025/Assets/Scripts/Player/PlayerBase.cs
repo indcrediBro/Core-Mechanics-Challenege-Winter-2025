@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerBase : MonoBehaviour
 {
     [Header("Health")]
-    [SerializeField] private HealthComponent m_health;
+    [SerializeField] private BaseHealth m_health;
 
     [Header("Visuals")]
     [SerializeField] private SpriteRenderer m_renderer;
@@ -13,27 +13,24 @@ public class PlayerBase : MonoBehaviour
 
     private Color m_defaultColor;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (m_health == null)
-            m_health = GetComponent<HealthComponent>();
-
         m_defaultColor = m_renderer.color;
 
-        m_health.HealthOld.OnDeath += OnBaseDestroyed;
-        m_health.HealthOld.OnHealthChanged += OnHealthOldChanged;
+        m_health.OnDeath += OnBaseDestroyed;
+        m_health.OnHealthChanged += OnHealthChanged;
     }
 
     private void OnDisable()
     {
         if (m_health != null)
         {
-            m_health.HealthOld.OnDeath -= OnBaseDestroyed;
-            m_health.HealthOld.OnHealthChanged -= OnHealthOldChanged;
+            m_health.OnDeath -= OnBaseDestroyed;
+            m_health.OnHealthChanged -= OnHealthChanged;
         }
     }
 
-    private void OnHealthOldChanged(float current, float max)
+    private void OnHealthChanged(int current, int max)
     {
         Flash();
     }

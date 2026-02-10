@@ -2,7 +2,13 @@ using UnityEngine;
 
 public class BrickWall : MonoBehaviour
 {
-    [SerializeField] private Sprite[] brickWallSprites;
+    [System.Serializable]
+    private class WallSprite
+    {
+        public Sprite[] sprites;
+    }
+
+    [SerializeField] private WallSprite[] brickWallSprites;
     [SerializeField] private SpriteRenderer[] brickWallRenderer;
 
     public void OnEnable()
@@ -10,19 +16,14 @@ public class BrickWall : MonoBehaviour
         AllocateRandomeSprites();
     }
 
-    public void OnDisable()
-    {
-        foreach (SpriteRenderer sr in brickWallRenderer)
-        {
-            sr.gameObject.SetActive(true);
-        }
-    }
-
     private void AllocateRandomeSprites()
     {
-        foreach (SpriteRenderer sr in brickWallRenderer)
+        WallSprite wallSprite = brickWallSprites[Random.Range(0, brickWallSprites.Length)];
+        for (int i = 0; i < brickWallRenderer.Length; i++)
         {
-            sr.sprite = brickWallSprites[Random.Range(0, brickWallSprites.Length)];
+            var sr = brickWallRenderer[i];
+            sr.sprite = wallSprite.sprites[i];
+            sr.gameObject.SetActive(true);
         }
     }
 }

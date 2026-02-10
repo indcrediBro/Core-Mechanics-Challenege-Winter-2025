@@ -1,21 +1,21 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
 public class EnemyTracker
 {
-    public int AliveCount { get; private set; }
+    private HashSet<GameObject> alive = new();
 
-    public void RegisterEnemy()
+    public int ActiveCount => alive.Count;
+    public bool HasBoss => alive.Any(e => e.CompareTag("Boss"));
+
+    public void RegisterEnemy(GameObject enemy)
     {
-        AliveCount++;
+        alive.Add(enemy);
     }
 
-    public void UnregisterEnemy()
+    public void UnregisterEnemy(GameObject enemy)
     {
-        AliveCount--;
-        if (AliveCount < 0)
-            AliveCount = 0;
-    }
-
-    public bool IsWaveCleared()
-    {
-        return AliveCount == 0;
+        alive.Remove(enemy);
     }
 }
