@@ -6,7 +6,8 @@ public enum ColorToPrefabType
     Player,
     PlayerBase,
     EnemySpawnPoint,
-    Wall
+    Wall,
+    FreeSpot
 }
 
 [System.Serializable]
@@ -29,6 +30,7 @@ public class LevelGenerator : MonoBehaviour
 
     private readonly List<GameObject> m_spawnedObjects = new();
     private readonly List<Vector3> m_enemySpawnPoints = new();
+    private readonly List<Vector3> m_freeSpots = new();
 
     private Texture2D m_levelImage;
     private Vector2 m_levelCenterOffset;
@@ -37,7 +39,7 @@ public class LevelGenerator : MonoBehaviour
     {
         ClearLevel();
         m_enemySpawnPoints.Clear();
-
+        m_freeSpots.Clear();
         // For now: map boss ID to texture name
         foreach (var tex in m_levelImages)
         {
@@ -68,12 +70,14 @@ public class LevelGenerator : MonoBehaviour
         }
 
         m_levelManager.SetSpawnPoints(m_enemySpawnPoints);
+        m_levelManager.SetFreeSpots(m_freeSpots);
     }
 
     public void GenerateLevel()
     {
         ClearLevel();
         m_enemySpawnPoints.Clear();
+        m_freeSpots.Clear();
 
         m_levelImage = m_levelImages[Random.Range(0, m_levelImages.Length)];
 
@@ -91,6 +95,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         m_levelManager.SetSpawnPoints(m_enemySpawnPoints);
+        m_levelManager.SetFreeSpots(m_freeSpots);
     }
 
     private void GenerateTile(int x, int y)
@@ -129,6 +134,9 @@ public class LevelGenerator : MonoBehaviour
 
                 case ColorToPrefabType.PlayerBase:
                     GameManager.Instance.GetPlayerBase().transform.position = worldPos;
+                    break;
+                case ColorToPrefabType.FreeSpot:
+                    m_freeSpots.Add(worldPos);
                     break;
             }
 

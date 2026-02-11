@@ -40,7 +40,19 @@ public abstract class Health : MonoBehaviour
 
     protected virtual void Die(float _timeBeforeRemoving)
     {
-        StartCoroutine(DieCO(_timeBeforeRemoving));
+        if (_timeBeforeRemoving > 0f)
+        {
+            StartCoroutine(DieCO(_timeBeforeRemoving));
+        }
+        else
+        {
+            m_isDead = true;
+            OnDeath?.Invoke();
+            if (m_dontDestroy)
+                Deactivate();
+            else
+                Destroy();
+        }
     }
 
     public void ResetHealthToMax()

@@ -15,7 +15,7 @@ public enum GameState
 public class GameManager : Singleton<GameManager>
 {
     [Header("Core")]
-    [SerializeField] private PlayerTank m_player;
+    [SerializeField] private PlayerController m_player;
     [SerializeField] private PlayerBase m_playerBase;
     [SerializeField] private PlayerHealth m_playerHealth;
 
@@ -27,7 +27,12 @@ public class GameManager : Singleton<GameManager>
     public event Action OnGameOver;
     public event Action OnBombExplode;
     public event Action OnShotFired;
+    public event Action<string> OnPowerUpPicked;
 
+    public void RaisePowerUp(string powerName)
+    {
+        OnPowerUpPicked?.Invoke(powerName);
+    }
     protected override void Awake()
     {
         base.Awake();
@@ -69,7 +74,6 @@ public class GameManager : Singleton<GameManager>
     private void OnWaveCleared()
     {
         SetState(GameState.WaveCleared);
-        Invoke(nameof(OpenUpgrades), m_upgradeDelay);
     }
 
     public void OpenUpgrades()
@@ -77,7 +81,7 @@ public class GameManager : Singleton<GameManager>
         SetState(GameState.Upgrading);
         Debug.Log("Upgrade Phase");
         Time.timeScale = 0;
-        UIManager.Instance.ShowUpgrades();
+        // UIManager.Instance.ShowUpgrades();
     }
 
     public void CloseUpgrades()
@@ -121,7 +125,7 @@ public class GameManager : Singleton<GameManager>
         State = newState;
     }
 
-    public PlayerTank GetPlayer()
+    public PlayerController GetPlayer()
     {
         return m_player;
     }
@@ -133,16 +137,17 @@ public class GameManager : Singleton<GameManager>
 
     public void TogglePause()
     {
-        if (State is not (GameState.Playing or GameState.Paused)) return;
-
-        if (State == GameState.Paused)
+        switch (State)
         {
-            SetState(GameState.Playing);
-            UIManager.Instance.Show(UIState.HUD);
-        }
-        else
-        {
-            SetState(GameState.Paused);
+            case GameState.Paused:
+                SetState(GameState.Playing);
+                UIManager.Instance.Show(UIState.HUD);
+                break;
+            case GameState.Playing:
+                SetState(GameState.Paused);
+                break;
+            default:
+                break;
         }
     }
 

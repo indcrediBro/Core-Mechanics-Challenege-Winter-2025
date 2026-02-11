@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
@@ -28,13 +28,38 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private Slider m_waveSlider;
     [SerializeField] private TMP_Text m_waveText;
     [SerializeField] private TMP_Text m_difficultyText;
-    [SerializeField] private TMP_Text[] m_scoresUI, m_bestScoresUI, m_livesUI;
+    [SerializeField] private TMP_Text m_bossText;
+    [SerializeField] private TMP_Text[] m_scoresUI;
+    [SerializeField] private TMP_Text[] m_bestScoresUI;
+    [SerializeField] private TMP_Text[] m_livesUI;
+    [SerializeField] private TMP_Text[] m_baseLivesUI;
+    [SerializeField] private TMP_Text m_powerUpText;
+    [SerializeField] private CanvasGroup m_powerUpCanvas;
+    [SerializeField] private float m_powerUpDuration = 2f;
 
     private Dictionary<UIState, GameObject> m_panels;
+    private float sliderVelocity;
+
     protected override void Awake()
     {
         base.Awake();
         InitializeUI();
+    }
+
+    private void OnDestroy()
+    {
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.OnWaveStarted -= OnWaveStarted;
+            RunManager.Instance.OnWaveCleared -= OnWaveCleared;
+            RunManager.Instance.OnBossWaveStarted -= OnBossWaveStarted;
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GetPlayerHealth().OnDamaged -= UpdateLivesUI;
+            GameManager.Instance.OnPowerUpPicked -= ShowPowerUp;
+        }
     }
 
     private void InitializeUI()
@@ -50,8 +75,12 @@ public class UIManager : Singleton<UIManager>
 
         m_fakeLoadingScreen.SetActive(true);
         Show(UIState.MainMenu);
-        m_gameOverReasonText.text = String.Empty;
+        m_gameOverReasonText.text = string.Empty;
+
         RunManager.Instance.OnWaveStarted += OnWaveStarted;
+        RunManager.Instance.OnWaveCleared += OnWaveCleared;
+        RunManager.Instance.OnBossWaveStarted += OnBossWaveStarted;
+        GameManager.Instance.OnPowerUpPicked += ShowPowerUp;
         GameManager.Instance.GetPlayerHealth().OnDamaged += UpdateLivesUI;
     }
 
@@ -69,61 +98,38 @@ public class UIManager : Singleton<UIManager>
     {
         Show(UIState.HUD);
         GameManager.Instance.StartGame();
+        UpdateLivesUI();
     }
 
-    public void Quit()
-    {
-        Application.Quit();
-    }
-
-    public void Resume()
-    {
-        Show(UIState.HUD);
-    }
-
-    public void QuitToMenu()
-    {
-        Show(UIState.MainMenu);
-    }
-
-    public void ShowUpgrades()
-    {
-        Show(UIState.Upgrade);
-    }
+    public void Resume() => Show(UIState.HUD);
+    public void Quit() => Application.Quit();
+    public void QuitToMenu() => Show(UIState.MainMenu);
+    public void ShowUpgrades() => Show(UIState.Upgrade);
 
     private void OnWaveStarted(WaveRuntime wave)
     {
         m_waveSlider.value = 0f;
-        m_waveText.text = $"{RunManager.Instance.CurrentWave + 1}";
-        string difficultyName = String.Empty;
-        switch (RunManager.Instance.DifficultyLevel)
-        {
-            case 0:
-                difficultyName = "Easy";
-                break;
-            case 1:
-                difficultyName = "Normal";
-                break;
-            case 2:
-                difficultyName = "Hard";
-                break;
-            case 3:
-                difficultyName = "Expert";
-                break;
-            case 4:
-                difficultyName = "Master";
-                break;
-            default:
-                difficultyName = "God";
-                break;
-        }
-        m_difficultyText.text = difficultyName;
+        m_waveText.text = $"Wave {RunManager.Instance.CurrentWave + 1}";
+
+        string[] names = { "Easy", "Normal", "Hard", "Expert", "Master", "God" };
+        int index = Mathf.Clamp(RunManager.Instance.DifficultyLevel, 0, names.Length - 1);
+        m_difficultyText.text = names[index];
+
+        if (m_bossText != null)
+            m_bossText.gameObject.SetActive(false);
     }
 
-    public void GameOver(string _reason)
+    private void OnBossWaveStarted()
     {
-        m_gameOverReasonText.text = _reason;
-        Show(UIState.GameOver);
+        if (m_bossText == null) return;
+
+        m_bossText.gameObject.SetActive(true);
+        m_bossText.text = "BOSS WAVE";
+    }
+
+    private void OnWaveCleared()
+    {
+        ShowUpgrades();
     }
 
     private void Update()
@@ -141,7 +147,19 @@ public class UIManager : Singleton<UIManager>
         if (wave == null)
             return;
 
-        m_waveSlider.value = wave.Progress01;
+        float target = wave.Progress01;
+        m_waveSlider.value = Mathf.SmoothDamp(
+            m_waveSlider.value,
+            target,
+            ref sliderVelocity,
+            0.2f
+        );
+    }
+
+    public void GameOver(string reason)
+    {
+        m_gameOverReasonText.text = reason;
+        Show(UIState.GameOver);
     }
 
     public void DisableLoadingScreen()
@@ -153,51 +171,88 @@ public class UIManager : Singleton<UIManager>
 
     public void UpdateScore()
     {
-        if(m_scoresUI.Length == 0) return;
-
         UpdateCurrentScoresUI();
         UpdateBestScoresUI();
     }
 
     private void UpdateCurrentScoresUI()
     {
-        foreach (TMP_Text scoreText in m_scoresUI)
-        {
-            if (scoreText == null)
-            {
-                Debug.LogError("scoresUI contains a null reference!");
-                continue;
-            }
-
+        foreach (var scoreText in m_scoresUI)
             scoreText.text = ScoreManager.Instance.Score.ToString();
-        }
     }
-
 
     private void UpdateBestScoresUI()
     {
         int highscore = PlayerPrefs.GetInt("HighScore", 0);
-        int currentScore = ScoreManager.Instance.Score;
+        int current = ScoreManager.Instance.Score;
 
-        if (currentScore > highscore)
+        if (current > highscore)
         {
-            highscore = currentScore;
+            highscore = current;
             PlayerPrefs.SetInt("HighScore", highscore);
         }
 
-        foreach (TMP_Text scoreText in m_bestScoresUI)
-        {
+        foreach (var scoreText in m_bestScoresUI)
             scoreText.text = highscore.ToString();
-        }
     }
+
     public void UpdateLivesUI()
     {
         int l = GameManager.Instance.GetPlayerHealth().GetCurrentHealthValue();
-
         Color c = l <= 1 ? Color.red : Color.white;
-        foreach (TMP_Text liveText in m_livesUI)
+
+        foreach (var liveText in m_livesUI)
         {
             liveText.text = l.ToString();
+            liveText.color = c;
         }
+
+        int m = GameManager.Instance.GetPlayerBase().GetComponent<Health>().GetCurrentHealthValue();
+        Color d = m <= 1 ? Color.red : Color.white;
+
+        foreach (var baseText in m_baseLivesUI)
+        {
+            baseText.text = m.ToString();
+            baseText.color = d;
+        }
+    }
+
+    private Coroutine powerRoutine;
+
+    private void ShowPowerUp(string powerName)
+    {
+        if (powerRoutine != null)
+            StopCoroutine(powerRoutine);
+
+        powerRoutine = StartCoroutine(PowerUpRoutine(powerName));
+    }
+
+    private IEnumerator PowerUpRoutine(string powerName)
+    {
+        m_powerUpText.text = powerName;
+        m_powerUpCanvas.alpha = 0f;
+
+        float t = 0f;
+
+        // Fade in + slide
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 4f;
+            m_powerUpCanvas.alpha = t;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(m_powerUpDuration);
+
+        t = 1f;
+
+        while (t > 0f)
+        {
+            t -= Time.deltaTime * 2f;
+            m_powerUpCanvas.alpha = t;
+            yield return null;
+        }
+
+        m_powerUpCanvas.alpha = 0f;
     }
 }

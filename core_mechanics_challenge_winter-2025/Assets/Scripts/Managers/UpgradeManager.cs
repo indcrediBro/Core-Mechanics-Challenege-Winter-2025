@@ -1,95 +1,62 @@
-    using System;
-    using System.Collections.Generic;
-    using UnityEngine;
+using UnityEngine;
 
-    public class UpgradeManager : Singleton<UpgradeManager>
+public class UpgradeManager : Singleton<UpgradeManager>
+{
+    [SerializeField] private PlayerController player;
+
+    public void ApplyUpgrade(UpgradeDefinition upgrade)
     {
-        private PlayerHealth m_playerHealth;
-        private BaseHealth m_baseHealth;
+        var stats = player.Stats;
 
-        [SerializeField] private int m_choicesPerWave = 3;
-
-        private readonly List<UpgradeType> m_allUpgrades = new()
+        switch (upgrade.Type)
         {
-            UpgradeType.FireRate,
-            UpgradeType.BulletDamage,
-            UpgradeType.BulletSize,
-            UpgradeType.BulletPierce,
-            UpgradeType.MoveSpeed,
-            UpgradeType.FrontCannon,
-            UpgradeType.RearCannon,
-            UpgradeType.ExtraFirePoint,
-            UpgradeType.PlayerHeal,
-            UpgradeType.PlayerMaxHealth,
-            UpgradeType.BaseHeal,
-            UpgradeType.BaseMaxHealth
-        };
+            case UpgradeType.FireRate:
+                stats.FireRate =
+                    Mathf.Max(0.05f, stats.FireRate - upgrade.FloatValue);
+                GameManager.Instance.RaisePowerUp("Fire-Rate Upgraded!");
+                break;
 
-        private void Start()
-        {
-            m_baseHealth = GameManager.Instance.GetPlayerBase().GetComponent<BaseHealth>();
-            m_playerHealth = GameManager.Instance.GetPlayer().GetComponent<PlayerHealth>();
-        }
+            case UpgradeType.BulletDamage:
+                stats.Damage += upgrade.IntValue;
+                GameManager.Instance.RaisePowerUp("Damage Upgraded!");
+                break;
 
-        public List<UpgradeType> GetUpgradeChoices()
-        {
-            List<UpgradeType> valid = new();
+            case UpgradeType.BulletPierce:
+                stats.BulletPierce += upgrade.IntValue;
+                GameManager.Instance.RaisePowerUp("Piercing Upgraded!");
+                break;
 
-            foreach (var upgrade in m_allUpgrades)
-            {
-                if (IsUpgradeValid(upgrade))
-                    valid.Add(upgrade);
-            }
+            case UpgradeType.MoveSpeed:
+                stats.MoveSpeed += upgrade.FloatValue;
+                GameManager.Instance.RaisePowerUp("Movement Upgraded!");
+                break;
 
-            Shuffle(valid);
+            case UpgradeType.FrontCannon:
+                stats.FrontCannonLevel =
+                    Mathf.Clamp(stats.FrontCannonLevel + 1, 1, 3);
+                player.WeaponRig.GetActiveFirePoints(stats);
+                GameManager.Instance.RaisePowerUp("Cannon Upgraded!");
+                break;
 
-            if (valid.Count > m_choicesPerWave)
-                valid.RemoveRange(m_choicesPerWave, valid.Count - m_choicesPerWave);
+            case UpgradeType.RearCannon:
+                stats.RearCannonEnabled = true;
+                player.WeaponRig.GetActiveFirePoints(stats);
+                GameManager.Instance.RaisePowerUp("Ass Cannon!");
+                break;
 
-            return valid;
-        }
+            case UpgradeType.PlayerMaxHealth:
+                GameManager.Instance.GetPlayerHealth()
+                    .SetMaxHealth(GameManager.Instance.GetPlayerHealth().GetMaxHealthValue() + upgrade.IntValue);
+                GameManager.Instance.RaisePowerUp("Health Upgraded!");
+                UIManager.Instance.UpdateLivesUI();
+                break;
 
-        public void ApplyUpgrade(UpgradeType type)
-        {
-            UpgradeFactory.Apply(
-                type,
-                GameManager.Instance.GetPlayer().GetStats(),
-                m_playerHealth,
-                m_baseHealth
-            );
-
-            Debug.Log("Upgrades complete of type:" + type.ToString());
-
-            GameManager.Instance.GetPlayer().RebuildWeapon();
-            GameManager.Instance.CloseUpgrades();
-        }
-
-        private bool IsUpgradeValid(UpgradeType type)
-        {
-            return type switch
-            {
-                UpgradeType.FireRate        => GameManager.Instance.GetPlayer().GetStats().FireRate > PlayerStats.MIN_FIRE_RATE,
-                UpgradeType.BulletDamage    => GameManager.Instance.GetPlayer().GetStats().Damage < PlayerStats.MAX_DAMAGE,
-                UpgradeType.BulletSize      => GameManager.Instance.GetPlayer().GetStats().BulletSize < PlayerStats.MAX_BULLET_SIZE,
-                UpgradeType.BulletPierce    => GameManager.Instance.GetPlayer().GetStats().BulletPierce < PlayerStats.MAX_PIERCE,
-                UpgradeType.MoveSpeed       => GameManager.Instance.GetPlayer().GetStats().MoveSpeed < PlayerStats.MAX_MOVE_SPEED,
-                UpgradeType.FrontCannon     => GameManager.Instance.GetPlayer().GetStats().FrontCannonLevel < 3,
-                UpgradeType.RearCannon      => !GameManager.Instance.GetPlayer().GetStats().RearCannonEnabled,
-                UpgradeType.ExtraFirePoint  => GameManager.Instance.GetPlayer().GetStats().FirePointLevel < 3,
-                UpgradeType.PlayerHeal      => m_playerHealth.GetCurrentHealthValue() < m_playerHealth.GetMaxHealthValue(),
-                UpgradeType.PlayerMaxHealth => true,
-                UpgradeType.BaseHeal        => m_baseHealth.GetCurrentHealthValue() < m_baseHealth.GetMaxHealthValue(),
-                UpgradeType.BaseMaxHealth   => true,
-                _ => false
-            };
-        }
-
-        private void Shuffle(List<UpgradeType> list)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                int j = UnityEngine.Random.Range(i, list.Count);
-                (list[i], list[j]) = (list[j], list[i]);
-            }
+            case UpgradeType.BaseMaxHealth:
+                BaseHealth baseHealth = GameManager.Instance.GetPlayerBase().GetComponent<BaseHealth>();
+                baseHealth.SetMaxHealth(baseHealth.GetMaxHealthValue() + upgrade.IntValue);
+                GameManager.Instance.RaisePowerUp("Base Upgraded!");
+                UIManager.Instance.UpdateLivesUI();
+                break;
         }
     }
+}

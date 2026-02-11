@@ -1,19 +1,30 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UpgradeButton : MonoBehaviour
 {
-    [SerializeField] private TMPro.TextMeshProUGUI m_label;
-    private UpgradeType m_type;
+    [SerializeField] private TMP_Text title;
+    [SerializeField] private Button button;
 
-    public void Setup(UpgradeType type)
+    private UpgradeDefinition definition;
+    private System.Action<UpgradeDefinition> callback;
+
+    public void Initialize(
+        UpgradeDefinition def,
+        System.Action<UpgradeDefinition> onClick
+    )
     {
-        m_type = type;
-        m_label.text = type.ToString();
+        definition = def;
+        callback = onClick;
+
+        title.text = def.Type.ToString();
+        button.onClick.AddListener(OnClick);
     }
 
-    public void Select()
+    private void OnClick()
     {
-        UpgradeManager.Instance.ApplyUpgrade(m_type);
+        callback?.Invoke(definition);
+        GameManager.Instance.CloseUpgrades();
     }
 }

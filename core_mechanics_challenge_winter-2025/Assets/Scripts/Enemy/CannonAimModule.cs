@@ -7,6 +7,8 @@ public class CannonAimModule : EnemyModule
 
     public override void Tick(EnemyContext ctx)
     {
+        if(RunManager.Instance.freezeEnemies) return;
+
         Transform target = ctx.player != null ? ctx.player : ctx.playerBase;
         if (target == null) return;
 

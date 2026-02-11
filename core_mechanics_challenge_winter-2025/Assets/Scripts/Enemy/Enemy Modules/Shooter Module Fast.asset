@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d46c7bde52074a499f51c723baa4669e, type: 3}
   m_Name: Shooter Module Fast
   m_EditorClassIdentifier: Assembly-CSharp::ShooterModule
-  bulletKey: Bullet
-  fireRate: 0.8
+  bulletKey: TinyBullet
+  fireRate: 1.25

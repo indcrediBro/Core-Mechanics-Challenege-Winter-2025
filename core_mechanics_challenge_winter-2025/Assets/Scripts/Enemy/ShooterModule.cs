@@ -18,6 +18,8 @@ public class ShooterModule : EnemyModule
         timer -= ctx.deltaTime;
         if (timer > 0f) return;
 
+        if(RunManager.Instance.freezeEnemies) return;
+
         GameObject b = ObjectPoolManager.Instance.SpawnPooledObject(
             bulletKey,
             ctx.firePoint.position,

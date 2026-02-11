@@ -19,5 +19,6 @@ public class EnemyContext
     // Animation
     public SimpleAnimState animState = new SimpleAnimState();
     public float moveTimer;
+    public float selfDestructTimer;
     public Vector3 moveDir;
 }

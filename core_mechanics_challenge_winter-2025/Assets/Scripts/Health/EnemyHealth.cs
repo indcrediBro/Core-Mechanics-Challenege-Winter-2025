@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class EnemyHealth : Health
@@ -19,8 +18,16 @@ public class EnemyHealth : Health
     private void HandleDeath()
     {
         Vector3 pos = transform.position;
+        int r = Random.Range(0, 100);
+        if (r < 10)
+        {
+            ObjectPoolManager.Instance.SpawnPooledObject("PowerUp",
+                transform.position,
+                Quaternion.identity
+            ).SetActive(true);
+        }
+
         ScoreManager.Instance.AddScore(pointsForKill,pos);
-        ObjectPoolManager.Instance.SpawnPooledObject("Explosion", transform.position, Quaternion.identity)
-            .SetActive(true);
+        ObjectPoolManager.Instance.SpawnPooledObject("Explosion", transform.position, Quaternion.identity).SetActive(true);
     }
 }

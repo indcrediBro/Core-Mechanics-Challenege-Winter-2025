@@ -9,6 +9,7 @@ public class LevelManager : Singleton<LevelManager>
     [SerializeField] private NavMeshSurface navMeshSurface;
 
     private List<Vector3> spawnPoints = new ();
+    private List<Vector3> freeSpots = new ();
 
     public List<Vector3> GetSpawnPoints() => spawnPoints;
 
@@ -17,9 +18,9 @@ public class LevelManager : Singleton<LevelManager>
         spawnPoints = _spawnPoints.ToList();
     }
 
-    public void AddSpawnPoint(Vector2 _spawnPoint)
+    public void SetFreeSpots(List<Vector3> _freeSpots)
     {
-        spawnPoints.Add(_spawnPoint);
+        freeSpots = _freeSpots;
     }
 
     public void LoadBossMap(string mapId)
@@ -32,5 +33,10 @@ public class LevelManager : Singleton<LevelManager>
     {
         levelGenerator.GenerateLevel();
         navMeshSurface.BuildNavMesh();
+    }
+
+    public List<Vector3> GetFreeSpots()
+    {
+        return freeSpots;
     }
 }

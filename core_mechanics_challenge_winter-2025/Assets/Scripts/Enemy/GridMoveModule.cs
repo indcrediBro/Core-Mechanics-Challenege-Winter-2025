@@ -40,6 +40,8 @@ public class GridMoveModule : EnemyModule
         if (!ctx.agent.isOnNavMesh)
             return;
 
+        if(RunManager.Instance.freezeEnemies) return;
+
         ctx.moveTimer -= ctx.deltaTime;
 
         if (ctx.moveTimer <= 0f || ctx.agent.remainingDistance < 0.05f)

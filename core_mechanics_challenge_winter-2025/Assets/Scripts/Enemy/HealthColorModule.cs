@@ -13,7 +13,7 @@ public class HealthColorModule : EnemyModule
     public override void OnEnter(EnemyContext ctx)
     {
         base.OnEnter(ctx);
-        fullHealthColor = ctx.spriteRenderer.color;
+        ctx.spriteRenderer.color = fullHealthColor;
         ctx.spriteRenderer.color = new Color(fullHealthColor.r, fullHealthColor.g, fullHealthColor.b, 1);
     }
 
@@ -24,15 +24,15 @@ public class HealthColorModule : EnemyModule
 
         if (ctx.controller.IsFlashing)
             return;
-
-        float t = 1f - (float)ctx.health.GetCurrentHealthValue()
-            / ctx.health.GetMaxHealthValue();
-
-        ctx.spriteRenderer.color = Color.Lerp(
-            fullHealthColor,
-            lowHealthColor,
-            t
-        );
+        //
+        // float t = 1f - (float)ctx.health.GetCurrentHealthValue()
+        //     / ctx.health.GetMaxHealthValue();
+        //
+        // ctx.spriteRenderer.color = Color.Lerp(
+        //     fullHealthColor,
+        //     lowHealthColor,
+        //     t
+        // );
     }
 
     public override void OnDamage(EnemyContext ctx)

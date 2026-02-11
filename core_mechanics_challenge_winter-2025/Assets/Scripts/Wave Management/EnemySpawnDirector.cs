@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawnDirector : MonoBehaviour
+public class EnemySpawnDirector : Singleton<EnemySpawnDirector>
 {
     [Header("Data")]
     [SerializeField] private EnemyCatalog catalog;
@@ -13,8 +13,9 @@ public class EnemySpawnDirector : MonoBehaviour
     private float spawnTimer;
     private bool spawningEnabled;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         tracker = new EnemyTracker();
     }
 
@@ -79,14 +80,23 @@ public class EnemySpawnDirector : MonoBehaviour
 
     private string PickEnemy()
     {
-        if (RunManager.Instance.IsBossWave && !tracker.HasBoss)
-            return catalog.bossEnemies[Random.Range(0, catalog.bossEnemies.Count)];
+        if (RunManager.Instance.IsBossWave)
+        {
+            return catalog.bossEnemies[
+                Random.Range(0, catalog.bossEnemies.Count)
+            ];
+        }
 
-        return catalog.normalEnemies[Random.Range(0, catalog.normalEnemies.Count)];
+        return catalog.normalEnemies[
+            Random.Range(0, catalog.normalEnemies.Count)
+        ];
     }
 
     private int GetMaxEnemies()
     {
+        if (RunManager.Instance.IsBossWave)
+            return 1;
+
         return 5 + RunManager.Instance.DifficultyLevel * 3;
     }
 
@@ -114,5 +124,10 @@ public class EnemySpawnDirector : MonoBehaviour
 
         health.OnDeath += OnEnemyDeath;
         enemy.SetActive(true);
+    }
+
+    public void KillAllActiveEnemies()
+    {
+        tracker.KillAll();
     }
 }

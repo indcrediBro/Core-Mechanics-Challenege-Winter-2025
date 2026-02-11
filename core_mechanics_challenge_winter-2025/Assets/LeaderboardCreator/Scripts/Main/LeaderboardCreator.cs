@@ -317,7 +317,7 @@ namespace Dan.Main
         internal static void LogError(string message)
         {
             if (!LoggingEnabled) return;
-            Debug.LogError($"[LeaderboardCreator] {message}");
+            Debug.Log($"[LeaderboardCreator] {message}");
         }
     }
 }

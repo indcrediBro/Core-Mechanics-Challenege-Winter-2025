@@ -7,7 +7,7 @@ public class KamikazeModule : EnemyModule
     [Header("Chase")]
     public float chaseSpeedMultiplier = 1.5f;
     public float detonationRange = 1.2f;
-
+    public float stoppingDistance = 0.25f;
     [Header("Explosion")]
     public float explosionRadius = 2.5f;
     public int damage = 5;
@@ -21,7 +21,7 @@ public class KamikazeModule : EnemyModule
         if (ctx.agent != null)
         {
             ctx.agent.speed *= chaseSpeedMultiplier;
-            ctx.agent.stoppingDistance = 0f;
+            ctx.agent.stoppingDistance = stoppingDistance;
             ctx.agent.updateRotation = false;
             ctx.agent.angularSpeed = 0f;
         }

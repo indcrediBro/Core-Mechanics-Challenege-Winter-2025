@@ -1,30 +1,35 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
 public class UpgradePanel : MonoBehaviour
 {
-    [SerializeField] private UpgradeButton[] m_buttons;
+    [SerializeField] private UpgradeButton buttonPrefab;
+    [SerializeField] private Transform buttonParent;
 
-    private void OnEnable()
+    private Action<UpgradeDefinition> onSelected;
+
+    public void Show(
+        List<UpgradeDefinition> upgrades,
+        Action<UpgradeDefinition> callback
+    )
     {
-        Populate();
+        gameObject.SetActive(true);
+        onSelected = callback;
+
+        foreach (Transform child in buttonParent)
+            Destroy(child.gameObject);
+
+        foreach (var up in upgrades)
+        {
+            var btn = Instantiate(buttonPrefab, buttonParent);
+            btn.Initialize(up, SelectUpgrade);
+        }
     }
 
-    private void Populate()
+    private void SelectUpgrade(UpgradeDefinition def)
     {
-        List<UpgradeType> choices = UpgradeManager.Instance.GetUpgradeChoices();
-
-        for (int i = 0; i < m_buttons.Length; i++)
-        {
-            if (i < choices.Count)
-            {
-                m_buttons[i].gameObject.SetActive(true);
-                m_buttons[i].Setup(choices[i]);
-            }
-            else
-            {
-                m_buttons[i].gameObject.SetActive(false);
-            }
-        }
+        onSelected?.Invoke(def);
+        gameObject.SetActive(false);
     }
 }

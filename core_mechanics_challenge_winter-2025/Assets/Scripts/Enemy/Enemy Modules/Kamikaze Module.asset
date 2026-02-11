@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Kamikaze Module
   m_EditorClassIdentifier: Assembly-CSharp::KamikazeModule
   chaseSpeedMultiplier: 1.1
-  detonationRange: 1
+  detonationRange: 2
+  stoppingDistance: 0.25
   explosionRadius: 2
-  damage: 5
+  damage: 2
   damageMask:
     serializedVersion: 2
     m_Bits: 265
-  explosionVFXKey: Explosion
+  explosionVFXKey: ExplosionBig

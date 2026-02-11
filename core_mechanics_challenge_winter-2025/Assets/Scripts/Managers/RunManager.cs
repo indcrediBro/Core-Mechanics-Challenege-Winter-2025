@@ -7,27 +7,13 @@ public class RunManager : Singleton<RunManager>
 
     public WaveRuntime CurrentWaveRuntime { get; private set; }
 
-    public bool IsBossWave => (CurrentWave + 1) % 7 == 0;
-    private BossEncounter activeBoss;
+    public bool IsBossWave => (CurrentWave + 1) % 3 == 0;
 
     public event Action<WaveRuntime> OnWaveStarted;
     public event Action OnWaveCleared;
+    public event Action OnBossWaveStarted;
 
-    private void Update()
-    {
-        if (activeBoss != null && activeBoss.IsCompleted)
-        {
-            activeBoss.EndEncounter();
-            activeBoss = null;
-            BossDefeated();
-        }
-    }
-
-    void StartBossEncounter()
-    {
-        activeBoss = BossFactory.Instance.SpawnBoss();
-        activeBoss.StartEncounter();
-    }
+    public bool freezeEnemies = false;
 
     public void StartRun()
     {
@@ -40,21 +26,26 @@ public class RunManager : Singleton<RunManager>
     {
         if (IsBossWave)
         {
-            StartBossEncounter();
-            return;
+            CurrentWaveRuntime = new WaveRuntime
+            {
+                TotalEnemies = 1
+            };
+
+            OnBossWaveStarted?.Invoke();
         }
-
-        int baseEnemies = 2;
-        int difficultyBonus = DifficultyLevel + CurrentWave;
-
-        CurrentWaveRuntime = new WaveRuntime
+        else
         {
-            TotalEnemies = baseEnemies + difficultyBonus
-        };
+            int baseEnemies = 3;
+            int difficultyBonus = DifficultyLevel + CurrentWave;
+
+            CurrentWaveRuntime = new WaveRuntime
+            {
+                TotalEnemies = baseEnemies + difficultyBonus
+            };
+        }
 
         OnWaveStarted?.Invoke(CurrentWaveRuntime);
     }
-
 
     public void EnemySpawned()
     {
@@ -72,25 +63,25 @@ public class RunManager : Singleton<RunManager>
     private void CompleteWave()
     {
         OnWaveCleared?.Invoke();
+        OnUpgradePhaseStarted?.Invoke();
     }
-
+    public event Action OnUpgradePhaseStarted;
     public void AdvanceWave()
     {
         CurrentWave++;
-
         if (IsBossWave)
-            return;
+            DifficultyLevel++;
 
         StartWave();
     }
 
     public void BossDefeated()
     {
-        DifficultyLevel++;
-        LevelManager.Instance.LoadRandomMap();
         AdvanceWave();
+        LevelManager.Instance.LoadRandomMap();
     }
 }
+
 
 public class WaveRuntime
 {

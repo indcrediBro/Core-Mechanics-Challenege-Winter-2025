@@ -25,6 +25,7 @@ public class TankMovement
         if (GameManager.Instance.State != GameState.Playing)
         {
             m_rb.linearVelocity = Vector3.zero;
+            AudioManager.Instance.StopSound("SFX_Move");
             return;
         }
 
