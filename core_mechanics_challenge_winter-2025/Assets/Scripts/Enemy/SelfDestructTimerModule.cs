@@ -44,7 +44,7 @@ public class SelfDestructTimerModule : EnemyModule
         for (int i = 0; i < spots.Count; i++)
         {
             int r = Random.Range(0, 100);
-            if(r < 51) continue;
+            if(r < 31) continue;
 
             Vector3 pos = spots[i];
 

@@ -7,7 +7,7 @@ public class RunManager : Singleton<RunManager>
 
     public WaveRuntime CurrentWaveRuntime { get; private set; }
 
-    public bool IsBossWave => (CurrentWave + 1) % 3 == 0;
+    public bool IsBossWave => (CurrentWave + 1) % 7 == 0;
 
     public event Action<WaveRuntime> OnWaveStarted;
     public event Action OnWaveCleared;
@@ -35,7 +35,7 @@ public class RunManager : Singleton<RunManager>
         }
         else
         {
-            int baseEnemies = 3;
+            int baseEnemies = 6;
             int difficultyBonus = DifficultyLevel + CurrentWave;
 
             CurrentWaveRuntime = new WaveRuntime
@@ -66,19 +66,20 @@ public class RunManager : Singleton<RunManager>
         OnUpgradePhaseStarted?.Invoke();
     }
     public event Action OnUpgradePhaseStarted;
+
     public void AdvanceWave()
     {
+        bool wasBossWave = IsBossWave;
+
         CurrentWave++;
-        if (IsBossWave)
+
+        if (wasBossWave)
+        {
+            LevelManager.Instance.LoadRandomMap();
             DifficultyLevel++;
+        }
 
         StartWave();
-    }
-
-    public void BossDefeated()
-    {
-        AdvanceWave();
-        LevelManager.Instance.LoadRandomMap();
     }
 }
 

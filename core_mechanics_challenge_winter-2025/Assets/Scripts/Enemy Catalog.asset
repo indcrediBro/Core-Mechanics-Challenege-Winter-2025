@@ -19,3 +19,4 @@ MonoBehaviour:
   bossEnemies:
   - BossPacman
   - BossBomberman
+  - Bonus

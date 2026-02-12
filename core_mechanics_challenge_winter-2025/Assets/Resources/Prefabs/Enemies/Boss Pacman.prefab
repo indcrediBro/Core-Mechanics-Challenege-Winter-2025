@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   m_dontDestroy: 1
-  m_maxHealth: 15
+  m_maxHealth: 25
   m_currentHealth: 0
   m_waitTimeBeforeDeath: 0
   pointsForKill: 1000
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19e0385d49683a49b4007e94e219d5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PacmanBoss
-  moveSpeed: 2
+  moveSpeed: 5
   sightDistance: 10
   obstacleMask:
     serializedVersion: 2

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class TankAnimator
+public class TankAnimator : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer m_sr;
     [SerializeField] private Sprite[] m_frames;

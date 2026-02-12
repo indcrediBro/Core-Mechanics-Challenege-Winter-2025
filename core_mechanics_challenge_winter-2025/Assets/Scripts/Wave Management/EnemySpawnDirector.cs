@@ -118,8 +118,8 @@ public class EnemySpawnDirector : Singleton<EnemySpawnDirector>
             tracker.UnregisterEnemy(enemy);
             RunManager.Instance.EnemyKilled();
 
-            if (enemy.CompareTag("Boss"))
-                RunManager.Instance.BossDefeated();
+            // if (enemy.CompareTag("Boss"))
+            //     RunManager.Instance.BossDefeated();
         }
 
         health.OnDeath += OnEnemyDeath;

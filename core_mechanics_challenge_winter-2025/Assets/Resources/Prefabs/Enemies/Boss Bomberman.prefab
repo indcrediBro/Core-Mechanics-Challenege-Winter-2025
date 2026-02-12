@@ -361,7 +361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   m_dontDestroy: 1
-  m_maxHealth: 1
+  m_maxHealth: 20
   m_currentHealth: 0
   m_waitTimeBeforeDeath: 0
   pointsForKill: 100

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfc664783d934d40bfe2fa3ee1bd023b, type: 3}
   m_Name: Player Statistics
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatistics
-  MoveSpeed: 3.5
-  FireRate: 0.5
+  MoveSpeed: 3
+  FireRate: 1
   Damage: 1
   BulletSize: 0.2
-  BulletPierce: 1
+  BulletPierce: 0
   FrontCannonLevel: 1
   RearCannonEnabled: 0
   FirePointLevel: 1

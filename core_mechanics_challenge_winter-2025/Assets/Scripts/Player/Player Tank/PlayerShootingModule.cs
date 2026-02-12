@@ -28,8 +28,6 @@ public class PlayerShootingModule : PlayerModule
             {
                 b.SetDamage(ctx.Stats.Damage);
                 b.SetNewMaxHealth(ctx.Stats.BulletPierce);
-                bullet.transform.localScale =
-                    Vector3.one * ctx.Stats.BulletSize;
             }
 
             bullet.SetActive(true);
